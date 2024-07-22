@@ -258,6 +258,8 @@ public class ReservationSystem {
             System.out.print("Enter name: ");
             String guest = sc.nextLine();
             LocalDateTime checkin = null, checkout = null; //checkin var for storing and checkingIn for scan
+            double discount = 0;
+            boolean validcode = false; //for the do-while loop for the codes
             do{
                 System.out.print("Check in Day (1-31): ");
                 int checkingIn = sc.nextInt();
@@ -278,6 +280,41 @@ public class ReservationSystem {
                     System.out.println("Choose another day.");
             }while (checkout == null);
 
+            do{
+                System.out.println("Enter a discount code (NA if not applicable): ");
+                String code = sc.nextLine();
+
+                switch (code){
+                    case "I_WORK_HERE":
+                        System.out.println("Entered a 10% discount code!");
+                        discount = 0.90;
+                        validcode = true;
+                        break;
+                    case "STAY4_GET1":
+                        long stay = java.time.Duration.between(checkin, checkout).toDays();
+                        if (stay >= 5){
+                            System.out.println("Entered the code! First day is free!");
+                            discount = (stay - 1) / stay;
+                            validcode = true;
+                        }
+                        else{
+                            System.out.println("Code not applicable. Reservation has to be 5 days or more.");
+                        }
+                        break;
+                    case "PAYDAY":
+                        if ((checkin.getDayOfMonth() == 15 || checkin.getDayOfMonth() == 30) || (checkout.getDayOfMonth() == 15
+                                || checkout.getDayOfMonth() == 30)){
+                            System.out.println("Entered the code! 7% overall discount applied!");
+                            discount = 0.93;
+                            validcode = true;
+                        }
+                        else
+                            System.out.println("Code is not applicable for the reservation dates.");
+                        break;
+                }
+
+            }while (!validcode);
+
             Room available = null;
             for (int i = 0; i < selectedHotel.getRoomList().length; i++){ //checks if room is available
                 Room room = selectedHotel.getRoomList()[i];
@@ -292,7 +329,8 @@ public class ReservationSystem {
                 Reservation reservation = new Reservation(guest, checkin, checkout, available); //create
                 selectedHotel.addReservation(new Reservation[]{reservation}); //add to hotel
                 System.out.println("Reservation Successful! Reservation ID: " + reservation.getReservationId());
-                System.out.println("Room " + available.getRoomName() + " booked for " + guest + " from " + checkin + " to " + checkout);
+                System.out.println("Room " + available.getRoomName() + " booked for " + guest + " from " + checkin +
+                        " to " + checkout + " for " + discount * available.getBasePrice());
                 continueMenu = true;
             }
         }
