@@ -1,273 +1,279 @@
-import java.time.LocalDateTime;
 import java.util.Random;
-/**
- * This is the hotel itself which allows for editing of the room and reservations.
- */
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class Hotel {
-    private String hotelName;
-    private Room[] roomList;
-    private Reservation[] reservationList;
-    private int roomCount;
-    private int reservationCount;
-    private /*final*/ double BASE_PRICE = 1299.0; // shouldn't be final "The base price across all rooms may be changed in the Manage Hotel feature."
+    private String name;
+    private int numOfRooms;
+    private ArrayList<Room> rooms;
+    private double basePrice;
+    private HashMap<String,Reservation> allReservations;
+    private int standardRooms;
+    private int deluxeRooms;
+    private int executiveRooms;
+    private ArrayList<Integer> removedRoomIds;
 
-    /**
-     * Constructs a hotel object with the given name.
-     * @param hotelName name given to the hotel
-     */
-    public Hotel(String hotelName) {
-        this.hotelName = hotelName;
-        this.roomList = new Room[50];
-        this.reservationList = new Reservation[50]; //unsure limit // 50 reservations since 1 room = 1 reservation?
-        this.roomCount = 50;
-        this.reservationCount = 0;
+    public Hotel(String name){
+        this.name = name;
+        this.numOfRooms = 50;
+        this.basePrice = 1299.0;
+        this.allReservations = new HashMap<>();
+        this.rooms = new ArrayList<>();
+        this.removedRoomIds = new ArrayList<>();
+        this.standardRooms = 50;
+        this.deluxeRooms = 0;
+        this.executiveRooms = 0;
+        initializeRooms();
+    }
 
-        //making sure there are more standard rooms than deluxe and executive (70% standard, 20% deluxe, 10% exec
-        int standardCount = (int) (roomCount * 0.70);
-        int deluxeCount = (int) (roomCount * 0.20);
-        int executiveCount = roomCount - standardCount - deluxeCount;  // Remaining rooms
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Hotel hotel = (Hotel) obj;
+        return name.equals(hotel.name);
+    }
 
-        int currentStandard = 0;
-        int currentDeluxe = 0;
-        int currentExecutive = 0;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    // Assumes 50 rooms exist in the array but will only name them
+    // The system will only access rooms until numOfRooms
+    private void initializeRooms(){
+        int floor = 1;
+        int roomNumber = 1;
+        int type = 0;
+        
+        for (int i = 0; i < 50; i++) {
+            int roomId = floor * 100 + roomNumber;
+            rooms.add(new Room(type,roomId,this.basePrice));
+            roomNumber++;
+            if (roomNumber == 10) {
+                floor++;
+                roomNumber = 1;
+            }
+        }
+    }
+    private void updateRoomTypes(){
+        for (int i = 0; i < this.standardRooms; i++){
+            rooms.get(i).setRoomType(0);
+        }
+        for (int i = this.standardRooms; i < this.deluxeRooms; i++){
+            rooms.get(i).setRoomType(1);
+        }
+        for (int i = this.deluxeRooms; i < this.executiveRooms; i++){
+            rooms.get(i).setRoomType(2);
+        }
+    }
+
+    public void addRooms(int num) {
+        if (num <= 0) {
+            System.out.println("Number of rooms cannot be less than 1.");
+            return;
+        }
+        if (this.numOfRooms + num > 50) {
+            System.out.println("Number of rooms cannot exceed 50.");
+            return;
+        }
+        this.numOfRooms += num;
+        int roomId;
+        for (int i = 0; i < num; i++){
+            //if (removedRoomIds.size() > 0){       theres no actually need to check for this since all the 50 room names are initialized
+            //       if the user wants to have a smaller hotel they will always go through room removal, which adds to the removedRoomIds
+
+            roomId = removedRoomIds.get(removedRoomIds.size()-1);
+            removedRoomIds.remove(removedRoomIds.size()-1);
+            rooms.add(new Room(0,roomId,this.basePrice));
+        }
+        System.out.println("Sucessfully added "+num+" rooms");
+    }
+
+    public boolean modifyRooms(int stand, int deluxe, int exec){
+        if ((stand + deluxe + exec) <= 50){
+            this.standardRooms = stand;
+            this.deluxeRooms = deluxe;
+            this.executiveRooms = exec;
+            updateRoomTypes();
+            System.out.println("Sucessfully modified rooms");
+            return true;
+        }
+        System.out.println("Error! You cannot have more than 50 rooms");
+        return false;
+    }
+    // removal is from right to left
+    public boolean removeRooms(int num){
+        int unreservedCount = this.numOfRooms - this.rooms.size();
+        if (unreservedCount < num) {
+            System.out.println("Not enough unreserved rooms to delete");
+            return false;
+        }
+
+        int removedCount = 0;
+        for (int i = this.numOfRooms; i >= 0 && removedCount < num; i--) {
+            Room room = rooms.get(i);
+            if (!room.hasReservation()) {
+                removedRoomIds.add(room.getRoomNumber());
+                rooms.remove(i);
+                removedCount++;
+            }
+        }
+        System.out.println("Successfully removed " + removedCount + " rooms.");
+        return true;
+    }
+
+    public boolean updateBasePrice(double newPrice){
+        if (this.allReservations.size() == 0) {
+            for (Room room : rooms){
+                room.setBasePrice(newPrice);
+            }
+            System.out.println("Sucessfully changed the base price across all rooms");
+            return true;
+        }
+        System.out.println("There must be no reservations when changing the base price");
+        return false;
+    }
+
+    // the name of function is misleading btw
+    private String randomNumber() {
         Random rand = new Random();
-
-        for (int i = 0; i < roomCount; i++) {
-            String roomType;
-            if (currentStandard < standardCount) {
-                roomType = "Standard";
-                currentStandard++;
-            } else if (currentDeluxe < deluxeCount) {
-                roomType = "Deluxe";
-                currentDeluxe++;
-            } else {
-                roomType = "Executive";
-                currentExecutive++;
-            }
-            roomList[i] = new Room(99 + (i + 1), BASE_PRICE, roomType);
+        int ran = rand.nextInt(900000) + 100000;
+        String newNumber = Integer.toString(ran);
+    
+        if (allReservations.containsKey(newNumber)) {
+            return randomNumber();
         }
+        return newNumber;
     }
 
-    /**
-     * Adds a number of rooms to the hotel.
-     * @param roomName name of the room
-     */
-    public void createRoom(int roomName) { // always follows BASE_PRICE, only update if needed
-        if (roomCount < roomList.length) {
-            String[] roomtypes = {"Standard", "Deluxe", "Executive"};
-            Random rand = new Random();
-            String roomtype = roomtypes[rand.nextInt(roomtypes.length)];
-            roomList[roomCount] = new Room(roomName, this.BASE_PRICE, roomtype);
-            roomCount++;
+    public Room findEmptyRoom(int type, int checkIn, int checkOut) {
+        return findEmptyRoomRecursive(type, checkIn, checkOut, 0);
+    }
+    private Room findEmptyRoomRecursive(int type, int checkIn, int checkOut, int index) {
+        // Check if it has reached all the rooms of the hotel
+        if (index >= numOfRooms) {
+            return null;
+        }
+        // Checks if the room of the same type
+        if (rooms.get(index).getRoomType() != type) {
+            return findEmptyRoomRecursive(type, checkIn, checkOut, index + 1);
+        }
+        // Iterates each day of the check in dates to see if its available
+        boolean isRoomAvailable = true;
+        for (int day = checkIn; day < checkOut; day++) { // note checkOut shouldnt be <= since checkout and checkin can overlap same day
+            if (!rooms.get(index).isAvailable(day)) {
+                isRoomAvailable = false;
+                break;
+            }
+        }
+        if (isRoomAvailable) {
+            return rooms.get(index);
         } else {
-            System.out.println("Room Capacity Reached.");
+            return findEmptyRoomRecursive(type, checkIn, checkOut, index + 1);
         }
     }
 
-    /**
-     * Adds a reservation to the hotel and room.
-     * @param reservations Array of reservations
-     */
-    public void addReservation(Reservation[] reservations) {
-        for (int i = 0; i < reservations.length; i++) {
-            Reservation reservation = reservations[i];
-            if (reservationCount < reservationList.length) {
-                reservationList[reservationCount] = reservation;
-                reservationCount++;
-            } else {
-                System.out.println("Reservation Capacity Reached.");
+    public boolean createReservation(int type, int pricePerNight, String guestName, int checkIn, int checkOut){
+        Room emptyRoom = findEmptyRoom(type, checkIn, checkOut);
+
+        if (emptyRoom != null) {
+            String reservationId = randomNumber();
+            Reservation res = new Reservation(pricePerNight,emptyRoom.getRoomNumber(),guestName,reservationId,checkIn,checkOut);
+            emptyRoom.addReservation(res);
+            allReservations.put(reservationId, res);
+            return true;
+        } else {
+            System.out.println("No available rooms of the specified type for the given date range.");
+            return false;
+        }
+    }
+
+    public boolean removeReservation(String reservationId){
+        if (!this.allReservations.containsKey(reservationId)) {
+            System.out.println("Reservation not found.");
+            return false;
+        }
+        
+        String resId = this.allReservations.get(reservationId).getReservationId();
+
+        for (Room room : rooms){
+            if (room.searchReservation(resId) != -1){
+                room.removeReservation(reservationId);
+                this.allReservations.remove(reservationId);
+                System.out.println("Sucessfully removed reservation from hotel");
+                return true;
+            }
+        
+        }
+        System.out.println("Reservation failed to be removed");
+        return false;
+    }
+
+    public void printBasicInfo(){
+        System.out.println("Hotel Name: " + this.getName());
+        System.out.println("Total Number of Rooms: " + this.getNumOfRooms());
+        System.out.println("Estimated Earnings for the Month: " + this.getTotalEarnings());
+    }
+    public void printRoomInfo(int roomNumber){
+        for (Room room : this.rooms) {
+            if (room.getRoomNumber() == roomNumber) {
+                room.printBasicInfo();
+                break;
             }
         }
     }
-
-    /**
-     * Removes reservations from the hotel.
-     * @param reservation The removed reservation
-     */
-    public void removeReservation(Reservation reservation) {
-        for (int i = 0; i < reservationCount; i++) {
-            if (reservationList[i] != null && reservationList[i].equals(reservation)) {
-                reservationList[i] = null;
-                System.out.println("Reservation removed.");
-                return;
-            }
+    public void printReservationInfo(String reservationId){
+        if (allReservations.containsKey(reservationId)){
+            allReservations.get(reservationId).printBasicInfo();
+        } else {
+            System.out.println("Reservation not found.");
         }
-        System.out.println("Reservation not found.");
     }
-
-    /**
-     * Returns total number of rooms.
-     * @return total number of rooms.
-     */
-    public int totalRooms() {
-        return roomCount;
+    public void printRoomTypeInfo(){
+        System.out.println("Number of rooms, ");
+        System.out.println("Standard rooms: "+this.standardRooms);
+        System.out.println("deluxe rooms: "+this.deluxeRooms);
+        System.out.println("Executive rooms: "+this.executiveRooms);
     }
 
     /**
      * Total number of earnings based on the reservations and price.
      * @return total earnings.
      */
-    public double estimateEarnings() {
-        double earnings = 0;
-        for (int i = 0; i < reservationCount; i++) {
-            if (reservationList[i] != null) {
-                earnings += reservationList[i].getTotalPrice();
+    public double getTotalEarnings() {
+        double totalEarnings = 0.0;
+
+        for (Reservation reservation : allReservations.values()) {
+            totalEarnings += reservation.getTotalPrice();
+        }
+        return totalEarnings;
+    }
+
+    public int getNumAvailableRooms(int date){
+        int count = 0;
+
+        for (Room room : rooms) {
+            if (room.isAvailable(date)) {
+                count++;
             }
         }
-        return earnings;
+        return count;
     }
 
-    /**
-     * Checks if the room is available on this date.
-     * @param dateTime date that is checked
-     * @return array with available and booked rooms.
-     */
-    public int[] availableRooms(LocalDateTime dateTime) {
-        int availableCount = 0;
-        int bookedCount = 0;
-        for (int i = 0; i < roomCount; i++) {
-            if (roomList[i].isAvailable(dateTime)) {
-                availableCount++;
-            } else {
-                bookedCount++;
-            }
-        }
-        return new int[]{availableCount, bookedCount};
+    public int getNumBookedRooms(int date){
+        return this.numOfRooms - this.getNumAvailableRooms(date);
     }
 
-    /**
-     * Provides information about the room.
-     * @param roomName name of the room
-     * @return Information of the room
-     */
-    public String roomInformation(String roomName) {
-        String status = "AVAILABLE"; // default case
-        int index = -1;
-
-        // Find the room by room name
-        for (int i = 0; i < this.roomCount; i++) {
-            if (this.getRoomList()[i].getRoomName().equals(roomName)) {
-                index = i;
-                break;
-            }
-        }
-
-        if (index == -1) {
-            status = "ERROR FETCHING ROOM AVAILABILITY";
-            return status;
-        }
-
-
-        if (!this.getRoomList()[index].isAvailable(LocalDateTime.now())) { // Use the current date for availability
-            status = "BOOKED";
-        }
-
-        return "\nRoom " + this.getRoomList()[index].getRoomName() + " is " + status+"\n";
+    public String getName(){
+        return this.name;
     }
 
-    /**
-     * Displays the information of the reservation that is made.
-     * @param reservationId reservationID of the reservation
-     * @return Information of the reservation
-     */
-    public String reservationInformation(int reservationId) {
-        for (int i = 0; i < reservationCount; i++) {
-            if (reservationList[i] != null && reservationList[i].getReservationId() == reservationId) {
-                Reservation reservation = reservationList[i];
-                return "Reservation ID: " + reservation.getReservationId() +
-                        ", Guest Name: " + reservation.getGuestName() +
-                        ", Check-In Date: " + reservation.getCheckInDate() +	// LocalDateTime checkIn = LocalDateTime.of(year,month,day,hour,minute) 
-                        ", Check-Out Date: " + reservation.getCheckOutDate() +	// use 24 hour time for this
-                        ", Total Price: " + reservation.getTotalPrice();
-            }
-        }
-        return "Reservation not found.";
+    public int getNumOfRooms(){
+        return this.numOfRooms;
     }
-    /**
-     * Finds the room by the name.
-     * @param roomName name of the room to be found
-     * @return The room is found, otherwise null
-     */
-    public Room RoomName(String roomName) {
-        for (int i = 0; i < roomCount; i++) {
-            if (roomList[i].getRoomName().equals(roomName)) {
-                return roomList[i];
-            }
-        }
-        return null;
-    }
-
-// GETTERS ==================================================
-    /**
-     * Returns the name of the hotel.
-     * @return name of the hotel
-     */
-    public String getHotelName() {
-        return hotelName;
-    }
-    /**
-     * Returns the base price of the rooms.
-     * @return base price of the rooms
-     */
-    public double getBasePrice() {
-        return BASE_PRICE;
-    }
-    /**
-     * Returns the total amount of rooms.
-     * @return total amount of rooms
-     */
-    public int getRoomCount() {
-        return this.roomCount;
-    }
-    /**
-     * Current number of reservations.
-     * @return number of reservations
-     */
-    public int getReservationCount() {
-        return this.reservationCount;
-    }
-    /**
-     * Returns the list of rooms.
-     * @return list of rooms.
-     */
-    public Room[] getRoomList() {
-        return roomList;
-    }
-    /**
-     * Returns the list of reservations.
-     * @return list of reservations
-     */
-    public Reservation[] getReservationList() {
-        return reservationList;
-    }
-
-    // SETTERS ================================================
-    /**
-     * Sets a new name for the hotel.
-     * @param newName new name of the hotel
-     */
-    public void setHotelName(String newName) {
-        this.hotelName = newName;
-    }
-    /**
-     * Sets a new base price for the rooms.
-     * @param newBasePrice new base price for the rooms
-     */
-    public void setBasePrice(double newBasePrice) {
-        this.BASE_PRICE = newBasePrice;
-    }
-    /**
-     * Sets a new room count for the hotel.
-     * @param newRoomCount new room count for the hotel
-     */
-    public void setRoomCount(int newRoomCount) {
-        this.roomCount = newRoomCount;
-    }
-    /**
-     * Sets a new reservation count for the hotel.
-     * @param newReservationCount new reservation count for the hotel
-     */
-    public void setReservationCount(int newReservationCount) {
-        this.reservationCount = newReservationCount;
+    public void setHotelName(String newName){
+        this.name = newName;
     }
 }

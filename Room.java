@@ -1,100 +1,99 @@
-import java.time.LocalDateTime;
-/**
- * Is representation of a room in a hotel
- */
+import java.util.ArrayList;
+
 public class Room {
-    private String roomName;
-    private String roomType;
-    private static int roomCounter = 100;
-    private double basePrice;
-    private LocalDateTime unavailableStartDT;
-    private LocalDateTime unavailableEndDT;
-    private Reservation[] reservations;
-    private int reservationCount;
-    /**
-     * Constructs a room with a name and a base price.
-     * @param roomName name of the room
-     * @param basePrice base price of the room
-     */
-    public Room(int roomName, double basePrice, String roomType) {
-        this.roomName = String.valueOf(roomCounter++);
-        this.roomType = roomType;
-        this.unavailableStartDT = null;
-        this.unavailableEndDT = null;
-        this.reservations = new Reservation[10];
-        this.reservationCount = 0;
-        switch (roomType) {
-            case "Deluxe":
-                this.basePrice = basePrice * 1.20;
+    int roomNumber;
+    int type;   // 0 is standard, 1 is suite, 2 is executive
+    double actualPrice;
+    private ArrayList<Reservation> reservationList; 
+    
+    public Room (int type, int roomNumber, double basePrice){
+        this.type = type;
+        this.roomNumber = roomNumber;
+        setBasePrice(basePrice);
+        
+    }
+    public void setBasePrice(double basePrice){
+        switch (this.type) {
+            case 0:
+                this.actualPrice = basePrice * 1;
                 break;
-            case "Executive":
-                this.basePrice = basePrice * 1.35;
+            case 1:
+                this.actualPrice = basePrice * 1.2;
                 break;
-            default:
-                this.basePrice = basePrice;
+            case 2:
+                this.actualPrice = basePrice * 1.35;
                 break;
         }
     }
-    /**
-     * Checks if the room is available on the given date.
-     * @param checkDate date to check if its available
-     * @return True if the room is available, otherwise false
-     */
-    public boolean isAvailable(LocalDateTime checkDate) {
-
-        /*if the given date is within the start and end of the object's unavailabilityDT then return false
-        if (!checkDate.isBefore(unavailableStartDT) && !checkDate.isAfter(unavailableEndDT)) {
-            return false;
-        } */
-        if (unavailableStartDT != null && !checkDate.isBefore(unavailableStartDT))
-            return false;
-        if (unavailableEndDT != null && !checkDate.isAfter(unavailableEndDT))
-            return false;
-
-        //checks if room is available
-        for (int i = 0; i < reservationCount; i++){
-            Reservation reservation = reservations[i];
-            if (!checkDate.isBefore(reservation.getCheckOutDate()) && !checkDate.isAfter(reservation.getCheckInDate())){
-                return false; //room is booked
+    public void addReservation(Reservation res){
+        this.reservationList.add(res);
+    }
+    public boolean removeReservation(String removeRes){
+        for (Reservation res : reservationList){
+            if (res.getReservationId().equals(removeRes)){
+                this.reservationList.remove(res);
+                System.out.println("Sucessfully removed reservation from room");
+                return true;
             }
         }
-
+        System.out.println("Could not find reservation to remove");
+        return false;
+    }
+    public boolean isAvailable(int day){
+        for (Reservation reservation : reservationList) {
+            if (day >= reservation.getCheckIn() && day < reservation.getCheckOut()) {
+                return false;
+            }
+        }
         return true;
     }
-    /**
-     * Returns the name of the room.
-     * @return name of the room
-     */
-    public String getRoomName() {
-        return roomName;
-    }
-    /**
-     * Returns the base price of the room.
-     * @return base price of the room
-     */
-    public double getBasePrice() {
-        return basePrice;
+
+    public void printBasicInfo(){
+        System.out.println("Room number: " + this.roomNumber);
+        System.out.println("Price per night: " + this.actualPrice);
+        System.out.print("Booked dates: ");
+
+        if (this.reservationList.size() == 0){
+            System.out.println("ALL AVAILABLE");
+        } else {
+            System.out.println();
+            for (Reservation reservation : this.reservationList) {
+                System.out.println("Days "+reservation.getCheckIn() +" to "+ reservation.getCheckOut());
+            }
+        }  
     }
 
-    public String getRoomType (){
-        return roomType;
-    }
-    /**
-     * Sets a new base price for the rooms.
-     * @param newBasePrice new base price for the room
-     */
-    public void setBasePrice(double newBasePrice) {
-        this.basePrice = newBasePrice;
-    }
-    /**
-     * Adds a reservation to the room.
-     * @param reservation reservation thats added
-     */
-    public void addReservation (Reservation reservation){
-        if (reservationCount < reservations.length) {
-            reservations[reservationCount++] = reservation;
-        } else {
-            System.out.println("Room is fully booked.");
+    public boolean printReservationInfo(String resNo){
+        for (Reservation res : reservationList){
+            if (res.getReservationId().equals(resNo)){
+                res.printBasicInfo();
+                return true;
+            }
         }
+        return false;
     }
+    public int searchReservation(String resId){
+        for (Reservation res : reservationList){
+            if (resId.equals(res.getReservationId())){
+                return this.roomNumber;
+            }
+        }
+        return -1;
+    }
+    public boolean hasReservation(){
+        if (this.reservationList.size() > 0) {
+            return true;
+        }
+        return false;
+    }
+    public int getRoomNumber(){
+        return this.roomNumber;
+    }
+    public int getRoomType(){
+        return this.type;
+    }
+    public void setRoomType(int type){
+        this.type = type;
+    }
+
 }
