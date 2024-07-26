@@ -1,8 +1,8 @@
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ReservationSystem {
-    private HashMap<String,Hotel> hotels = new HashMap<>();
+    private ArrayList<Hotel> hotels = new ArrayList<>();
 
     public boolean createHotel(){
         Scanner sc = new Scanner(System.in);
@@ -11,12 +11,14 @@ public class ReservationSystem {
         String newName = sc.nextLine();
         
 
-        if (hotels.containsKey(newName)) {
-            System.out.println("Hotel name already exists");
-            return false;
-        } 
+        for (Hotel hotel : hotels) {
+            if (hotel.getName().equalsIgnoreCase(newName)) {
+                System.out.println("Hotel name already exists");
+                return false;
+            }
+        }
         Hotel hotel = new Hotel(newName); 
-        hotels.put(newName,hotel);
+        hotels.add(hotel);
         System.out.println("Hotel successfully created!");
 
         return true;
@@ -28,7 +30,14 @@ public class ReservationSystem {
         System.out.print("Enter the name of the hotel you would you like to view: ");
         String hotelName = sc.nextLine();
 
-        Hotel selectedHotel = hotels.get(hotelName);
+        Hotel selectedHotel = null;
+
+        for (Hotel hotel : hotels) {
+            if (hotel.getName().equalsIgnoreCase(hotelName)) {
+                selectedHotel = hotel;
+                break;
+            }
+        }
         
         if (selectedHotel == null) {
             System.out.println("Hotel not found.");
@@ -88,7 +97,14 @@ public class ReservationSystem {
         System.out.print("Enter the name of the hotel you would you like to manage: ");
         String hotelName = sc.nextLine();
 
-        Hotel selectedHotel = hotels.get(hotelName);
+        Hotel selectedHotel = null;
+        
+        for (Hotel hotel : hotels) {
+            if (hotel.getName().equalsIgnoreCase(hotelName)) {
+                selectedHotel = hotel;
+                break;
+            }
+        }
          
         if (selectedHotel == null) {
             System.out.println("Hotel not found.");
@@ -189,6 +205,19 @@ public class ReservationSystem {
                 }
                 break;
             case 6:
+                System.out.println("Enter reservation ID to remove: ");
+                String removeId = sc.nextLine();
+                System.out.println("Are you sure you will delete reservation no. "+removeId);
+                System.out.println("Press 1 to confirm, 0 to cancel");
+                int removeConfirm = sc.nextInt();
+                sc.nextLine();
+
+                if (removeConfirm == 1){
+                    System.err.println("Removing reservation");
+                    selectedHotel.removeReservation(removeId);
+                } else {
+                    System.err.println("Cancelling . . .");
+                }
                 break;
             case 7:
                 break;
@@ -201,7 +230,7 @@ public class ReservationSystem {
     private void updateHotelName(Hotel selectedHotel) {
         Scanner sc = new Scanner(System.in);
 
-        while(true) { // infinite loop btw
+        while(true) { 
             System.out.println("Type 0 to exit.");
             System.out.println("Enter new name of the hotel: ");
             String newName = sc.nextLine();
@@ -210,21 +239,22 @@ public class ReservationSystem {
                 return;
             }
     
-            if (hotels.containsKey(newName)) {
-                System.out.println("Hotel name already exists");
-            } else {
-                System.out.println("New hotel name: " + newName);
-                System.out.println("Type 1 to confirm, 0 to cancel: ");
-                int choice = sc.nextInt();
-                sc.nextLine();
-    
-                if (choice == 1) {
-                    hotels.remove(selectedHotel.getName());
-                    selectedHotel.setHotelName(newName);
-                    hotels.put(newName, selectedHotel); 
+            for (Hotel hotel : hotels) {
+                if (hotel.getName().equalsIgnoreCase(newName)) {
+                    System.out.println("Hotel name already exists");
                     return;
                 }
             }
+            System.out.println("New hotel name: " + newName);
+            System.out.println("Type 1 to confirm, 0 to cancel: ");
+            int choice = sc.nextInt();
+            sc.nextLine();
+    
+            if (choice == 1) {
+                selectedHotel.setHotelName(newName);
+                return;
+            }
+            
         }
     }
 }

@@ -1,22 +1,29 @@
 import java.util.Objects;
 
 public class Reservation {
-    String guestName;
-    String reservationId;
-    int roomNumber;
-    int checkIn;
-    int checkOut;
+    final String guestName;
+    final String reservationId;
+    final int roomNumber;
+    final int checkIn;
+    final int checkOut;
     double totalPrice;
     double pricePerNight;
 
     // this exists for checking unique id
-    public Reservation(String reservationId) {
+    public Reservation(final String reservationId) {
         this.reservationId = reservationId;
+        this.guestName = null;
+        this.roomNumber = 0;
+        this.checkIn = 0;
+        this.checkOut = 0;
+        this.pricePerNight = 0.0;
+        this.totalPrice = 0.0;
     }
 
-    public Reservation(int pricePerNight, int roomNumber, String name, String reservationId, int checkIn, int checkOut){
+    public Reservation(int pricePerNight, final int roomNumber, final String name, final String reservationId, final int checkIn, final int checkOut){
         this.guestName = name;
         this.reservationId = reservationId;
+        this.roomNumber = roomNumber;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.pricePerNight = pricePerNight;

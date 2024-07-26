@@ -28,16 +28,8 @@ public class Room {
     public void addReservation(Reservation res){
         this.reservationList.add(res);
     }
-    public boolean removeReservation(String removeRes){
-        for (Reservation res : reservationList){
-            if (res.getReservationId().equals(removeRes)){
-                this.reservationList.remove(res);
-                System.out.println("Sucessfully removed reservation from room");
-                return true;
-            }
-        }
-        System.out.println("Could not find reservation to remove");
-        return false;
+    public void removeReservation(Reservation res){
+        this.reservationList.remove(res);
     }
     public boolean isAvailable(int day){
         for (Reservation reservation : reservationList) {
@@ -72,13 +64,13 @@ public class Room {
         }
         return false;
     }
-    public int searchReservation(String resId){
-        for (Reservation res : reservationList){
-            if (resId.equals(res.getReservationId())){
-                return this.roomNumber;
+    public Reservation getReservation(Reservation res){
+        for (Reservation reservation : reservationList){
+            if (reservation.equals(res)){ // note this uses the equals overide
+                return reservation;
             }
         }
-        return -1;
+        return null;
     }
     public boolean hasReservation(){
         if (this.reservationList.size() > 0) {

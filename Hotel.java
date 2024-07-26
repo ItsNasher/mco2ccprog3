@@ -1,7 +1,6 @@
 import java.util.Random;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Hotel {
     private String name;
@@ -26,20 +25,6 @@ public class Hotel {
         this.executiveRooms = 0;
         initializeRooms();
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Hotel hotel = (Hotel) obj;
-        return name.equals(hotel.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
-
     // Assumes 50 rooms exist in the array but will only name them
     // The system will only access rooms until numOfRooms
     private void initializeRooms(){
@@ -190,22 +175,20 @@ public class Hotel {
         }
     }
 
-    public boolean removeReservation(String reservationId){
-        if (!this.allReservations.containsKey(reservationId)) {
+    public boolean removeReservation(String resId){
+        if (!this.allReservations.containsKey(resId)) {
             System.out.println("Reservation not found.");
             return false;
         }
         
-        String resId = this.allReservations.get(reservationId).getReservationId();
+        Reservation res = this.allReservations.get(resId);
 
         for (Room room : rooms){
-            if (room.searchReservation(resId) != -1){
-                room.removeReservation(reservationId);
-                this.allReservations.remove(reservationId);
-                System.out.println("Sucessfully removed reservation from hotel");
-                return true;
+            if (room.getReservation(res).equals(res)){
+                room.removeReservation(res);
+                this.allReservations.remove(resId, res); // surely this will remove it
+                System.out.println("Reservation sucessfully removed");
             }
-        
         }
         System.out.println("Reservation failed to be removed");
         return false;
