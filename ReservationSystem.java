@@ -129,7 +129,25 @@ public class ReservationSystem {
                 menu = false;
                 break;
             case 1:
-                updateHotelName(selectedHotel);
+                System.out.println("Enter new hotel name: ");
+                String newHotelName = sc.nextLine();
+
+                for (Hotel hotel : hotels) {
+                    if (hotel.getName().equalsIgnoreCase(newHotelName)) {
+                        System.out.println("Hotel name already exists");
+                        break;
+                    }
+                }
+                System.out.println("New hotel name: " + newHotelName);
+                System.out.println("Type 1 to confirm, 0 to cancel: ");
+                int confirmHotel = sc.nextInt();
+                sc.nextLine();
+        
+                if (confirmHotel == 1) {
+                    selectedHotel.setHotelName(newHotelName);
+                    System.out.println("Sucessfully renamed hotel");
+                    return;
+                }
                 break;
 
             case 2:
@@ -213,48 +231,43 @@ public class ReservationSystem {
                 sc.nextLine();
 
                 if (removeConfirm == 1){
-                    System.err.println("Removing reservation");
+                    System.out.println("Removing reservation");
                     selectedHotel.removeReservation(removeId);
                 } else {
                     System.err.println("Cancelling . . .");
                 }
                 break;
             case 7:
+                Hotel removeHotel = null;
+
+                System.out.println("Enter name of hotel to remove: ");
+                String removeHotelName = sc.nextLine();
+
+                for (Hotel hotel : hotels){
+                    if (hotel.getName().equals(removeHotelName)){
+                        removeHotel = hotel;
+                    }
+                }
+
+                if (removeHotel == null){
+                    System.out.println("Could not find hotel to remove");
+                    break;
+                }
+                System.out.println("Are you sure you will delete hotel "+removeHotelName);
+                System.out.println("Press 1 to confirm, 0 to cancel");
+                int confirmRemoveHotel = sc.nextInt();
+                sc.nextLine();
+
+                if (confirmRemoveHotel == 1){
+                    System.out.println("Removing hotel");
+                    this.hotels.remove(removeHotel);
+                } else {
+                    System.err.println("Cancelling . . .");
+                }
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
             }
-        }
-    }
-
-    private void updateHotelName(Hotel selectedHotel) {
-        Scanner sc = new Scanner(System.in);
-
-        while(true) { 
-            System.out.println("Type 0 to exit.");
-            System.out.println("Enter new name of the hotel: ");
-            String newName = sc.nextLine();
-    
-            if (newName.equals("0")) {
-                return;
-            }
-    
-            for (Hotel hotel : hotels) {
-                if (hotel.getName().equalsIgnoreCase(newName)) {
-                    System.out.println("Hotel name already exists");
-                    return;
-                }
-            }
-            System.out.println("New hotel name: " + newName);
-            System.out.println("Type 1 to confirm, 0 to cancel: ");
-            int choice = sc.nextInt();
-            sc.nextLine();
-    
-            if (choice == 1) {
-                selectedHotel.setHotelName(newName);
-                return;
-            }
-            
         }
     }
 }
