@@ -54,11 +54,12 @@ public class ReservationSystemController extends JFrame implements ActionListene
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == createhotel) {
-            String newName = JOptionPane.showInputDialog("Input name of new hotel:");
-            if (newName != null && !newName.trim().isEmpty()) {
-                boolean success = createHotel(newName);
-                JOptionPane.showMessageDialog(this, success ? "Hotel successfully created!" : "Hotel name already exists");
+            if (e.getSource() == createhotel) {
+                String newName = JOptionPane.showInputDialog("Input name of new hotel:");
+                if (newName != null && !newName.trim().isEmpty()) {
+                    boolean success = createHotel(newName);
+                    JOptionPane.showMessageDialog(this, success ? "Hotel successfully created!" : "Hotel name already exists");
+                }
             }
             if (e.getSource() == viewhotel) {
                 String hotelName = JOptionPane.showInputDialog("Enter the name of the hotel to view:");
@@ -78,7 +79,6 @@ public class ReservationSystemController extends JFrame implements ActionListene
             if (e.getSource() == simulatebooking) {
 
             }
-        }
     }
     private boolean createHotel(String newName) {
         for (Hotel hotel : hotels) {
@@ -94,56 +94,56 @@ public class ReservationSystemController extends JFrame implements ActionListene
 
     private Hotel viewHotel(String hotelName) {
         String hotelName = JOptionPane.showInputDialog("Enter the name of the hotel you would you like to view: ");
-        if (hotelName != null && !hotelName.trim().isEmpty()){
+        if (hotelName != null && !hotelName.trim().isEmpty()) {
             Hotel selectedHotel = getHotel(hotelName);
-            if (selectedHotel == null){
+            if (selectedHotel == null) {
                 JOptionPane.showMessageDialog(this, "Hotel not found.");
                 return;
             }
-        }
-        boolean menu = true;
-        while (menu) {
-            System.out.println("1. View basic information about the hotel");
-            System.out.println("2. View total number of available and booked rooms for a selected date");
-            System.out.println("3. View information about a selected room");
-            System.out.println("4. View information about a selected reservation");
-            System.out.println("5. Back to main menu");
+            boolean menu = true;
+            while (menu) {
+                String[] options = {"View Basic Info", "View Room Availability",
+                        "View Room Info", "View Reservation Info", "Back to Main Menu"};
 
-            int choice = sc.nextInt();
-            sc.nextLine();
+                int choice = JOptionPane.showOptionDialog(this, "Choose an Option: ",
+                        "Hotel Menu", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
+                        options, options[0]);
 
-            switch (choice) {
-                case 1:
-                    selectedHotel.printBasicInfo();
-                    break;
+                switch (choice) {
+                    case 1: //basic info
+                        JOptionPane.showMessageDialog(this, selectedHotel.printBasicInfo());
+                        break; // printBasicinfo isnt inline with what the parameter is looking for ^
 
-                case 2:
-                    System.out.println("Enter a day in a month (31): ");
-                    int day = sc.nextInt();
-                    sc.nextLine();
+                    case 2: //room availability
+                        String chooseday = JOptionPane.showInputDialog("Enter a day in the month (1-31): ");
+                        int day = Integer.parseInt(chooseday);
+                        JOptionPane.showMessageDialog(this, "Number of available rooms" +
+                                selectedHotel.getNumAvailableRooms(day) + "\n" + "Number of booked rooms" +
+                                selectedHotel.getNumBookedRooms(day));
 
-                    System.out.println("Number of available Rooms: " +selectedHotel.getNumAvailableRooms(day));
-                    System.out.println("Number of booked Rooms: " +selectedHotel.getNumBookedRooms(day));
-                    break;
+                        System.out.println("Number of available Rooms: " + selectedHotel.getNumAvailableRooms(day));
+                        System.out.println("Number of booked Rooms: " + selectedHotel.getNumBookedRooms(day));
+                        break;
 
-                case 3:
-                    System.out.println("Enter the room number: ");
-                    int roomNumber = sc.nextInt();
-                    sc.nextLine();
-                    selectedHotel.printRoomInfo(roomNumber);
-                    break;
+                    case 3:
+                        System.out.println("Enter the room number: ");
+                        int roomNumber = sc.nextInt();
+                        sc.nextLine();
+                        selectedHotel.printRoomInfo(roomNumber);
+                        break;
 
-                case 4:
-                    System.out.println("Enter a reservation number: ");
-                    String resNo = sc.nextLine();
+                    case 4:
+                        System.out.println("Enter a reservation number: ");
+                        String resNo = sc.nextLine();
 
-                    selectedHotel.printReservationInfo(resNo);
-                    break;
-                case 5:
-                    menu = false;
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                        selectedHotel.printReservationInfo(resNo);
+                        break;
+                    case 5:
+                        menu = false;
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
             }
         }
     }
