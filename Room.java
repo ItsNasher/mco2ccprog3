@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Room {
     int roomNumber;
-    int type;   // 0 is standard, 1 is suite, 2 is executive
+    int type;   // 0 is standard, 1 is deluxe, 2 is executive
     double actualPrice;
     private ArrayList<Reservation> reservationList; 
     
@@ -11,18 +11,17 @@ public class Room {
         this.roomNumber = roomNumber;
         this.reservationList = new ArrayList<>();
         setActualPrice(basePrice);
-        
     }
     public void setActualPrice(double basePrice){
         switch (this.type) {
             case 0:
-                this.actualPrice = basePrice * 1;
+                this.actualPrice = (basePrice * 1);
                 break;
             case 1:
-                this.actualPrice = basePrice * 1.2;
+                this.actualPrice = (basePrice * 1.2);
                 break;
             case 2:
-                this.actualPrice = basePrice * 1.35;
+                this.actualPrice = (basePrice * 1.35);
                 break;
         }
     }
@@ -55,11 +54,20 @@ public class Room {
             }
         }  
     }
-
     public boolean printReservationInfo(String resNo){
         for (Reservation res : reservationList){
             if (res.getReservationId().equals(resNo)){
                 res.printBasicInfo();
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean removeReservationById(String resId){
+        for (Reservation res : reservationList){
+            if (res.getReservationId().equals(resId)) {
+                reservationList.remove(res);
+                System.out.println("Sucessfully removed reservation from room");
                 return true;
             }
         }

@@ -12,6 +12,7 @@ public class Hotel {
     private int deluxeRooms;
     private int executiveRooms;
     private ArrayList<Integer> removedRoomIds;
+    private double[] datePriceModifier;
 
     public Hotel(String name){
         this.name = name;
@@ -23,10 +24,10 @@ public class Hotel {
         this.standardRooms = 50;
         this.deluxeRooms = 0;
         this.executiveRooms = 0;
+        this.datePriceModifier = new double[31];
         initializeRooms();
     }
-    // Assumes 50 rooms exist in the array but will only name them
-    // The system will only access rooms until numOfRooms
+    //system relies on the initialization of 50 rooms regardless of usage otherwise removedRoomIds break
     private void initializeRooms(){
         int floor = 1;
         int roomNumber = 1;
@@ -40,8 +41,19 @@ public class Hotel {
                 roomNumber = 1;
             }
         }
+        for (int i = 0; i < 31; i++){
+            datePriceModifier[i] = 1.00;
+        }
     }
-    private void updateRoomTypes(){
+    public boolean setDatePriceModifier(int day, double multiplier){
+        if (day < 1 || day > 31){
+            System.out.println("You cannot choose a day beyond possible reservation dates");
+            return false;
+        }
+        this.datePriceModifier[day-1] = multiplier/100;
+        return true;
+    }
+    private void updateRooms(){
         for (int i = 0; i < this.standardRooms; i++){
             rooms.get(i).setRoomType(0);
             rooms.get(i).setActualPrice(this.basePrice);
@@ -55,7 +67,6 @@ public class Hotel {
             rooms.get(i).setActualPrice(this.basePrice);
         }
     }
-
     public void addRooms(int num) {
         if (num <= 0) {
             System.out.println("Number of rooms cannot be less than 1.");
@@ -79,15 +90,16 @@ public class Hotel {
     }
 
     public boolean modifyRooms(int stand, int deluxe, int exec){
-        if ((stand + deluxe + exec) <= this.numOfRooms){
+        if ((stand + deluxe + exec) == this.numOfRooms){
             this.standardRooms = stand;
             this.deluxeRooms = deluxe;
             this.executiveRooms = exec;
-            updateRoomTypes();
+            updateRooms();
             System.out.println("Sucessfully modified rooms");
             return true;
-        }
-        System.out.println("Error! You cannot have more than 50 rooms");
+        } 
+        System.out.println("Rooms must add up to "+this.numOfRooms);
+        System.out.println("Cancelling . . .");
         return false;
     }
     // removal is from right to left
@@ -125,9 +137,8 @@ public class Hotel {
             System.out.println("The new price must be greater than or equal to 100");
             return false;
         }
-        for (Room room : rooms){
-            room.setActualPrice(newPrice);
-        }
+        this.basePrice = newPrice;
+        updateRooms();
         System.out.println("Sucessfully changed the base price across all rooms");
         return true;
     }
@@ -170,13 +181,64 @@ public class Hotel {
             return findEmptyRoomRecursive(type, checkIn, checkOut, index + 1);
         }
     }
+    private void applyDiscountCode(String code, Reservation res){
+        boolean discountApplied = false;
+
+        if (code.equals("I_WORK_HERE")){
+            double discountedPrice = res.getTotalPrice() * 0.90; // 10% OFF
+            res.setTotalPrice(discountedPrice);
+            System.out.println("Discount code successfully applied");
+            discountApplied = true;
+        } 
+        else if (code.equals("STAY4_GET1")){
+            if ((res.getCheckOut() - res.getCheckIn() + 1) >= 5){
+                res.setPricePerNight(0, 0);
+                System.out.println("Discount code successfully applied");
+                discountApplied = true;
+            } else {
+                System.out.println("The super secret conditions were not satisfied");
+            }
+        }
+        else if (code.equals("PAYDAY")){
+            if ((res.getCheckIn() <= 15 && res.getCheckOut() > 15) || (res.getCheckIn() <= 30 && res.getCheckOut() > 30)) {
+                double discountedPrice = res.getTotalPrice() * 0.93; // 7% OFF
+                res.setTotalPrice(discountedPrice);
+                System.out.println("Discount code successfully applied");
+                discountApplied = true;
+            } else {
+                System.out.println("The super secret conditions were not satisfied");
+            }
+        } 
+
+        if (!discountApplied){
+            System.out.println("Wrong discount code");
+        }
+    }
 
     public String createReservation(int type, String guestName, int checkIn, int checkOut){
         Room emptyRoom = findEmptyRoom(type, checkIn, checkOut);
 
         if (emptyRoom != null) {
             String reservationId = randomNumber();
-            Reservation res = new Reservation(emptyRoom.getActualPrice(),emptyRoom.getRoomNumber(),guestName,reservationId,checkIn,checkOut);
+            Reservation res = new Reservation(emptyRoom.getActualPrice(),this.datePriceModifier,emptyRoom.getRoomNumber(),guestName,reservationId,checkIn,checkOut);
+            emptyRoom.addReservation(res);
+            allReservations.put(reservationId, res);
+            return reservationId;
+        } else {
+            System.out.println("No available rooms of the specified type for the given date range.");
+            System.out.println("No reservations were created");;
+            return null;
+        }
+    }
+    public String createReservation(int type, String guestName, int checkIn, int checkOut, String discountCode){
+        Room emptyRoom = findEmptyRoom(type, checkIn, checkOut);
+
+        if (emptyRoom != null) {
+            String reservationId = randomNumber();
+            Reservation res = new Reservation(emptyRoom.getActualPrice(),this.datePriceModifier,emptyRoom.getRoomNumber(),guestName,reservationId,checkIn,checkOut);
+
+            applyDiscountCode(discountCode, res); // APPLY DISCOUNT CODE
+
             emptyRoom.addReservation(res);
             allReservations.put(reservationId, res);
             return reservationId;
@@ -188,28 +250,31 @@ public class Hotel {
     }
 
     public boolean removeReservation(String resId){
-        if (!this.allReservations.containsKey(resId)) {
+        Reservation res = this.allReservations.get(resId);
+    
+        if (res == null) {
             System.out.println("Reservation not found.");
             return false;
         }
-        
-        Reservation res = this.allReservations.get(resId);
-
-        for (Room room : rooms){
-            if (room.getReservation(res).equals(res)){
-                room.removeReservation(res);
-                this.allReservations.remove(resId, res); // surely this will remove it
-                System.out.println("Reservation sucessfully removed");
+    
+        for (Room room : rooms) {
+            if (room.removeReservationById(resId)) {
+                this.allReservations.remove(resId);
+                System.out.println("Reservation successfully removed.");
                 return true;
             }
         }
+    
         System.out.println("Reservation failed to be removed");
         return false;
     }
+
+    // mostly for debug (does this count as bonus feature? lol)
     public void printAllRooms(){
         for (Room room : rooms){
             System.out.print(room.getRoomNumber()+" ");
-            System.out.println(room.getRoomType());
+            System.out.print(room.getRoomType()+" ");
+            System.out.println(room.getActualPrice());
         }
     }
     public void printBasicInfo(){
@@ -240,7 +305,16 @@ public class Hotel {
         System.out.println("deluxe rooms: "+this.deluxeRooms);
         System.out.println("Executive rooms: "+this.executiveRooms);
     }
-
+    // DEBUG PURPOSES ONLY
+    public void printDatePriceInfo(String resId, int dateStart, int dateEnd){
+        Reservation res = allReservations.get(resId);
+        int resIndex = 0;
+        for (int i = dateStart; i <= dateEnd; i++){
+            System.out.print("Day "+i+": "+String.format("%.0f%%", datePriceModifier[i-1] * 100));    
+            System.out.println(" "+res.getPricePerNight(resIndex));
+            resIndex++;
+        }
+    }
     /**
      * Total number of earnings based on the reservations and price.
      * @return total earnings.

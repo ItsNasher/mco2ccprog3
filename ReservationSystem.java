@@ -124,7 +124,10 @@ public class ReservationSystem {
             return;
         }
         boolean menu = true;
+        
         while (menu){
+            int confirmDelete = 0; 
+
             System.out.println("0. Exit the menu");
             System.out.println("1. Change name of the hotel");
             System.out.println("2. Add rooms");
@@ -133,6 +136,7 @@ public class ReservationSystem {
             System.out.println("5. Update base price of each room");
             System.out.println("6. Remove reservation");
             System.out.println("7. Remove hotel");
+            System.out.println("8. Edit date price modifiers");
 
             int choice = sc.nextInt();
             sc.nextLine();
@@ -173,56 +177,66 @@ public class ReservationSystem {
                 sc.nextLine();
                 selectedHotel.addRooms(addRooms);
                 break;    
-
-            case 3:
-                System.out.println("Current rooms, ");
-                selectedHotel.printRoomTypeInfo();
-                System.out.println("");
-                System.out.println("Press 1 to edit, press 0 to cancel");
-                int modifyRoom = sc.nextInt();
-                sc.nextLine();
-
-                if(modifyRoom == 0){
-                    System.out.println("Going back");
-                    break;
-                }
-
-                System.out.println("Enter new number of standard rooms");
-                int standard = sc.nextInt();
-                sc.nextLine();
-
-                System.out.println("Enter new number of deluxe rooms");
-                int deluxe = sc.nextInt();
-                sc.nextLine();
-
-                System.out.println("Enter new number of executive rooms");
-                int executive = sc.nextInt();
-                sc.nextLine();
-
-                System.out.println("Standard rooms: "+standard);
-                System.out.println("Deluxe rooms: "+deluxe);
-                System.out.println("Executive rooms: "+executive);
-
-                System.out.println("Press 1 to confirm, 0 to cancel");
-                if (sc.nextInt() == 1){
-                    selectedHotel.modifyRooms(standard, deluxe, executive);
-                }
-                else{
-                    System.out.println("Cancelling. . .");
-                }
-                break;
-            
             case 4:
                 System.out.println("Enter number of rooms to delete: ");
                 int deleteRooms = sc.nextInt();
                 sc.nextLine();
 
                 System.out.println("Press 1 to confirm you will delete "+deleteRooms+" rooms\nPress 0 to cancel");
-                int confirmDelete = sc.nextInt();
+                confirmDelete = sc.nextInt();
                 sc.nextLine();
 
                 if (confirmDelete == 1){
                     selectedHotel.removeRooms(deleteRooms);
+                }
+            // dont add a break; here, it purposely flows to case 3
+            case 3:
+                if (confirmDelete == 0) {
+                    System.out.println("Current rooms, ");
+                    selectedHotel.printRoomTypeInfo();
+                    System.out.println("");
+                    System.out.println("Press 1 to edit, press 0 to cancel");
+                    int modifyRoom = sc.nextInt();
+                    sc.nextLine();
+
+                    if(modifyRoom == 0){
+                        System.out.println("Going back");
+                        break;
+                    }
+                }
+                
+                int totalRooms = selectedHotel.getNumOfRooms();
+                int standard, deluxe, executive;
+
+                while (true) {
+                    System.out.println("Enter new number of standard rooms");
+                    standard = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.println("Enter new number of deluxe rooms");
+                    deluxe = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.println("Enter new number of executive rooms");
+                    executive = sc.nextInt();
+                    sc.nextLine();
+
+                    if (standard + deluxe + executive == totalRooms) {
+                        break;
+                    } else {
+                        System.out.println("The total number of rooms must equal " + totalRooms + ". Please try again.");
+                    }
+                }
+
+                System.out.println("Standard rooms: " + standard);
+                System.out.println("Deluxe rooms: " + deluxe);
+                System.out.println("Executive rooms: " + executive);
+
+                System.out.println("Press 1 to confirm, 0 to cancel");
+                if (sc.nextInt() == 1) {
+                    selectedHotel.modifyRooms(standard, deluxe, executive);
+                } else {
+                    System.out.println("Cancelling. . .");
                 }
                 break;
             case 5:
@@ -283,6 +297,60 @@ public class ReservationSystem {
                     System.err.println("Cancelling . . .");
                 }
                 break;
+            case 8:
+                System.out.println("Set date price modifier for,");
+                System.out.println("1. Single date");
+                System.out.println("2. Multiple dates");
+                System.out.println("3. Return to menu");
+                int dpmChoice = sc.nextInt();
+                sc.nextLine();
+                if (dpmChoice == 1){
+                    System.out.println("Enter date to modify: ");
+                    int date = sc.nextInt();
+                    sc.nextLine();
+                    System.out.println("Enter new date price modifier [Default is 100%]: ");
+                    double multiplier =sc.nextDouble();
+                    sc.nextLine();
+                    System.out.println("Day "+date+" will be sold at "+multiplier+" of its prices");
+
+                    System.out.println("Press 1 to confirm, 0 to cancel");
+                    int dpmConfirm = sc.nextInt();
+                    sc.nextLine();
+                    if (dpmConfirm == 1 && selectedHotel.setDatePriceModifier(date, multiplier)){
+                        System.out.println("Sucessfully changed date price modifier");
+                        break;
+                    } else {
+                        System.out.println("Canceling . . .");
+                        break;
+                    }
+                } else if (dpmChoice == 2){
+                    System.out.println("Enter the first day to modify: ");
+                    int dateStart = sc.nextInt();
+                    sc.nextLine();
+                    System.out.println("Enter the last day to modify: ");
+                    int dateEnd = sc.nextInt();
+                    sc.nextLine();
+                    System.out.println("Enter new date price modifier [Default is 100%]: ");
+                    double multiplier =sc.nextDouble();
+                    sc.nextLine();
+                    System.out.println("Dates "+dateStart+" to "+dateEnd+" will be sold at "+multiplier+" of its prices");
+                    System.out.println("Press 1 to confirm, 0 to cancel");
+                    int dpmConfirm = sc.nextInt();
+                    sc.nextLine();
+                    if (dpmConfirm == 1){
+                        for (int i = dateStart; i <= dateEnd; i++){
+                            selectedHotel.setDatePriceModifier(i, multiplier);
+                        }
+                        System.out.println("Sucessfully changed date price modifier");
+                        break;
+                    } else {
+                        System.out.println("Canceling . . .");
+                        break;
+                    }
+                } else {
+                    System.out.println("Going back");
+                }
+                break;
             default:
                 System.out.println("Invalid choice. Please try again.");
             }
@@ -326,17 +394,17 @@ public class ReservationSystem {
             System.out.println("User input error, defaulting to standard room");
             break;
         }
-        System.out.println("Enter a check in date [2-30]: ");
+        System.out.println("Enter a check in date [1-30]: ");
         int checkIn = sc.nextInt();
         sc.nextLine();
-        System.out.println("Enter a check out date [2-30]: ");
+        System.out.println("Enter a check out date [2-31]: ");
         int checkOut = sc.nextInt();
         sc.nextLine();
         if (checkIn == checkOut){
             System.out.println("The check in and check out dates cannot be the same");
             return;
         }
-        if (checkIn == 1 || checkOut == 31){
+        if (checkIn == 31 || checkOut == 1){
             System.out.println("The check in and check out dates must not be the 1st or 31st");
             return;
         }
@@ -344,14 +412,24 @@ public class ReservationSystem {
             System.out.println("The check out date must not occur before the check in date");
             return;
         }
+        String discountCode = null;
+        System.out.println("Enter a discount code (if applicable): ");
+        System.out.println("Type 0 if none");
+        discountCode = sc.nextLine();
+
         if (checkOut > checkIn){ 
             String resId = null;
-            resId = selectedHotel.createReservation(type, guestName, checkIn, checkOut);
+            if (discountCode == "0") {
+                resId = selectedHotel.createReservation(type, guestName, checkIn, checkOut);
+            } else {
+                resId = selectedHotel.createReservation(type, guestName, checkIn, checkOut, discountCode);
+            }
             if (resId == null){
                 System.out.println("Failed to create reservation");
                 return;
             }
             selectedHotel.printReservationInfo(resId);
+            selectedHotel.printDatePriceInfo(resId,checkIn,checkOut); // DEBUG PURPOSES ONLY
             System.out.println("Press 1 to confirm, 0 to cancel");
             int confirmBooking = sc.nextInt();
             sc.nextLine();

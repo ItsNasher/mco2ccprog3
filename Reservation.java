@@ -1,4 +1,5 @@
 import java.util.Objects;
+import java.util.ArrayList;
 
 public class Reservation {
     final String guestName;
@@ -7,28 +8,36 @@ public class Reservation {
     final int checkIn;
     final int checkOut;
     double totalPrice;
-    double pricePerNight;
+    private ArrayList<Double> pricePerNight;
 
     // this exists for checking unique id
+    // see removeReservation in hotel
     public Reservation(final String reservationId) {
         this.reservationId = reservationId;
         this.guestName = null;
         this.roomNumber = 0;
         this.checkIn = 0;
         this.checkOut = 0;
-        this.pricePerNight = 0.0;
+        this.pricePerNight = null;
         this.totalPrice = 0.0;
     }
 
-    public Reservation(double pricePerNight, final int roomNumber, final String name, final String reservationId, final int checkIn, final int checkOut){
+    public Reservation(double pricePerNight, double datePriceModifier[], final int roomNumber, final String name, final String reservationId, final int checkIn, final int checkOut){
         this.guestName = name;
         this.reservationId = reservationId;
         this.roomNumber = roomNumber;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-        this.pricePerNight = pricePerNight;
-        int numOfNights = checkOut - checkIn;
-        this.totalPrice = pricePerNight * numOfNights;
+        this.pricePerNight = new ArrayList<>();
+        for (int i = checkIn-1; i < checkOut; i++){
+            this.pricePerNight.add(pricePerNight*datePriceModifier[i]);
+        }
+
+        double total = 0.0;
+        for (Double price : this.pricePerNight) {
+            total += price;
+        }
+        this.totalPrice = total;
     }
     @Override
     public boolean equals(Object obj) {
@@ -62,5 +71,17 @@ public class Reservation {
     }
     public double getTotalPrice(){
         return this.totalPrice;
+    }
+    public int getRoomNumber(){
+        return this.roomNumber;
+    }
+    public double getPricePerNight(int index){
+        return this.pricePerNight.get(index);
+    }
+    public void setPricePerNight(int index, double price){
+        this.pricePerNight.set(index,price);
+    }
+    public void setTotalPrice(double totalPrice){
+        this.totalPrice = totalPrice;
     }
 }
