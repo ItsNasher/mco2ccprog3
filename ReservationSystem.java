@@ -9,8 +9,12 @@ public class ReservationSystem {
 
         System.out.println("Input name of new hotel: ");
         String newName = sc.nextLine();
-        
 
+        if (newName.equalsIgnoreCase("temp")){
+            System.out.println("The name temp cannot be used");
+            return false;
+        }
+        
         for (Hotel hotel : hotels) {
             if (hotel.getName().equalsIgnoreCase(newName)) {
                 System.out.println("Hotel name already exists");
@@ -56,37 +60,46 @@ public class ReservationSystem {
             sc.nextLine();
 
             switch (choice) {
-                case 1:
+            case 1:
+                System.out.println("1. View basic hotel info");
+                System.out.println("2. Show all room names");
+                int basicInfo = sc.nextInt();
+                sc.nextLine();
+                if (basicInfo == 1){
                     selectedHotel.printBasicInfo();
-                    break;
+                }
+                if (basicInfo == 2){
+                    selectedHotel.printAllRooms();
+                }
+                break;
 
-                case 2:
-                    System.out.println("Enter a day in a month (31): ");
-                    int day = sc.nextInt();
-                    sc.nextLine();
+            case 2:
+                System.out.println("Enter a day in a month (31): ");
+                int day = sc.nextInt();
+                sc.nextLine();
 
-                    System.out.println("Number of available Rooms: " +selectedHotel.getNumAvailableRooms(day));
-                    System.out.println("Number of booked Rooms: " +selectedHotel.getNumBookedRooms(day));
-                    break;
+                System.out.println("Number of available Rooms: " +selectedHotel.getNumAvailableRooms(day));
+                System.out.println("Number of booked Rooms: " +selectedHotel.getNumBookedRooms(day));
+                break;
 
-                case 3:
-                    System.out.println("Enter the room number: ");
-                    int roomNumber = sc.nextInt();
-                    sc.nextLine();
-                    selectedHotel.printRoomInfo(roomNumber);
-                    break;
+            case 3:
+                System.out.println("Enter the room number: ");
+                int roomNumber = sc.nextInt();
+                sc.nextLine();
+                selectedHotel.printRoomInfo(roomNumber);
+                break;
 
-                case 4:
-                    System.out.println("Enter a reservation number: ");
-                    String resNo = sc.nextLine();
+            case 4:
+                System.out.println("Enter a reservation number: ");
+                String resNo = sc.nextLine();
                     
-                    selectedHotel.printReservationInfo(resNo);
-                    break;
-                case 5:
-                    menu = false;
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                selectedHotel.printReservationInfo(resNo);
+                break;
+            case 5:
+                menu = false;
+                break;
+            default:
+                System.out.println("Invalid choice. Please try again.");
             }
         }
     }
@@ -131,23 +144,27 @@ public class ReservationSystem {
             case 1:
                 System.out.println("Enter new hotel name: ");
                 String newHotelName = sc.nextLine();
-
+                int isUnique = 1;
                 for (Hotel hotel : hotels) {
                     if (hotel.getName().equalsIgnoreCase(newHotelName)) {
+                        isUnique = 0;
                         System.out.println("Hotel name already exists");
                         break;
                     }
                 }
-                System.out.println("New hotel name: " + newHotelName);
-                System.out.println("Type 1 to confirm, 0 to cancel: ");
-                int confirmHotel = sc.nextInt();
-                sc.nextLine();
-        
-                if (confirmHotel == 1) {
-                    selectedHotel.setHotelName(newHotelName);
-                    System.out.println("Sucessfully renamed hotel");
-                    return;
+                if (isUnique == 1){
+                    System.out.println("New hotel name: " + newHotelName);
+                    System.out.println("Type 1 to confirm, 0 to cancel: ");
+                    int confirmHotel = sc.nextInt();
+                    sc.nextLine();
+            
+                    if (confirmHotel == 1) {
+                        selectedHotel.setHotelName(newHotelName);
+                        System.out.println("Sucessfully renamed hotel");
+                        return;
+                    }
                 }
+                
                 break;
 
             case 2:
@@ -158,9 +175,10 @@ public class ReservationSystem {
                 break;    
 
             case 3:
-                System.out.println("0. Go back");
+                System.out.println("Current rooms, ");
                 selectedHotel.printRoomTypeInfo();
-                System.out.println("Select a room to modify: ");
+                System.out.println("");
+                System.out.println("Press 1 to edit, press 0 to cancel");
                 int modifyRoom = sc.nextInt();
                 sc.nextLine();
 
@@ -269,5 +287,83 @@ public class ReservationSystem {
                 System.out.println("Invalid choice. Please try again.");
             }
         }
+    }
+    public void simulateBooking(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the guest name for reservation: ");
+        String guestName = sc.nextLine();
+
+        System.out.print("Enter the name of the hotel you would you like to book: ");
+        String hotelName = sc.nextLine();
+
+        Hotel selectedHotel = null;
+        
+        for (Hotel hotel : hotels) {
+            if (hotel.getName().equalsIgnoreCase(hotelName)) {
+                selectedHotel = hotel;
+                break;
+            }
+        }
+        if (selectedHotel == null) {
+            System.out.println("Hotel not found.");
+            return;
+        }
+
+        System.out.println("Enter type of room to book [S,D,E]: ");
+        String stringType = sc.nextLine();
+        int type = 0;
+        switch (stringType) {
+        case "S":
+            type = 0;
+            break;
+        case "D":
+            type = 1;
+            break;
+        case "E":
+            type = 2;
+            break;
+        default:
+            System.out.println("User input error, defaulting to standard room");
+            break;
+        }
+        System.out.println("Enter a check in date [2-30]: ");
+        int checkIn = sc.nextInt();
+        sc.nextLine();
+        System.out.println("Enter a check out date [2-30]: ");
+        int checkOut = sc.nextInt();
+        sc.nextLine();
+        if (checkIn == checkOut){
+            System.out.println("The check in and check out dates cannot be the same");
+            return;
+        }
+        if (checkIn == 1 || checkOut == 31){
+            System.out.println("The check in and check out dates must not be the 1st or 31st");
+            return;
+        }
+        if (checkIn > checkOut){
+            System.out.println("The check out date must not occur before the check in date");
+            return;
+        }
+        if (checkOut > checkIn){ 
+            String resId = null;
+            resId = selectedHotel.createReservation(type, guestName, checkIn, checkOut);
+            if (resId == null){
+                System.out.println("Failed to create reservation");
+                return;
+            }
+            selectedHotel.printReservationInfo(resId);
+            System.out.println("Press 1 to confirm, 0 to cancel");
+            int confirmBooking = sc.nextInt();
+            sc.nextLine();
+            if (confirmBooking == 0){
+                selectedHotel.removeReservation(resId);
+                System.out.println("Reservation was cancelled");
+                return;
+            }
+            else {
+                System.out.println("Sucessfully created reservation ID "+resId);
+            }
+        }
+
     }
 }

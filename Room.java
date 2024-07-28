@@ -9,10 +9,11 @@ public class Room {
     public Room (int type, int roomNumber, double basePrice){
         this.type = type;
         this.roomNumber = roomNumber;
-        setBasePrice(basePrice);
+        this.reservationList = new ArrayList<>();
+        setActualPrice(basePrice);
         
     }
-    public void setBasePrice(double basePrice){
+    public void setActualPrice(double basePrice){
         switch (this.type) {
             case 0:
                 this.actualPrice = basePrice * 1;
@@ -45,7 +46,7 @@ public class Room {
         System.out.println("Price per night: " + this.actualPrice);
         System.out.print("Booked dates: ");
 
-        if (this.reservationList.size() == 0){
+        if (this.reservationList.isEmpty()){
             System.out.println("ALL AVAILABLE");
         } else {
             System.out.println();
@@ -83,6 +84,9 @@ public class Room {
     }
     public int getRoomType(){
         return this.type;
+    }
+    public double getActualPrice(){
+        return this.actualPrice;
     }
     public void setRoomType(int type){
         this.type = type;

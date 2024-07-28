@@ -30,13 +30,12 @@ public class Hotel {
     private void initializeRooms(){
         int floor = 1;
         int roomNumber = 1;
-        int type = 0;
         
         for (int i = 0; i < 50; i++) {
             int roomId = floor * 100 + roomNumber;
-            rooms.add(new Room(type,roomId,this.basePrice));
+            rooms.add(new Room(0,roomId,this.basePrice));
             roomNumber++;
-            if (roomNumber == 10) {
+            if (roomNumber == 11) {
                 floor++;
                 roomNumber = 1;
             }
@@ -45,12 +44,15 @@ public class Hotel {
     private void updateRoomTypes(){
         for (int i = 0; i < this.standardRooms; i++){
             rooms.get(i).setRoomType(0);
+            rooms.get(i).setActualPrice(this.basePrice);
         }
-        for (int i = this.standardRooms; i < this.deluxeRooms; i++){
+        for (int i = this.standardRooms; i < (this.standardRooms + this.deluxeRooms); i++){
             rooms.get(i).setRoomType(1);
+            rooms.get(i).setActualPrice(this.basePrice);
         }
-        for (int i = this.deluxeRooms; i < this.executiveRooms; i++){
+        for (int i = (this.standardRooms + this.deluxeRooms); i < (this.standardRooms + this.deluxeRooms + this.executiveRooms); i++){
             rooms.get(i).setRoomType(2);
+            rooms.get(i).setActualPrice(this.basePrice);
         }
     }
 
@@ -77,7 +79,7 @@ public class Hotel {
     }
 
     public boolean modifyRooms(int stand, int deluxe, int exec){
-        if ((stand + deluxe + exec) <= 50){
+        if ((stand + deluxe + exec) <= this.numOfRooms){
             this.standardRooms = stand;
             this.deluxeRooms = deluxe;
             this.executiveRooms = exec;
@@ -89,15 +91,19 @@ public class Hotel {
         return false;
     }
     // removal is from right to left
-    public boolean removeRooms(int num){
-        int unreservedCount = this.numOfRooms - this.rooms.size();
+    public boolean removeRooms(int num) {
+        if (num == this.numOfRooms){
+            System.out.println("You cannot remove all the rooms of a hotel");
+            return false;
+        }
+        int unreservedCount = this.rooms.size();
         if (unreservedCount < num) {
             System.out.println("Not enough unreserved rooms to delete");
             return false;
         }
-
+    
         int removedCount = 0;
-        for (int i = this.numOfRooms; i >= 0 && removedCount < num; i--) {
+        for (int i = rooms.size() - 1; i >= 0 && removedCount < num; i--) {
             Room room = rooms.get(i);
             if (!room.hasReservation()) {
                 removedRoomIds.add(room.getRoomNumber());
@@ -105,20 +111,25 @@ public class Hotel {
                 removedCount++;
             }
         }
+        this.numOfRooms -= removedCount;
         System.out.println("Successfully removed " + removedCount + " rooms.");
         return true;
     }
 
     public boolean updateBasePrice(double newPrice){
-        if (this.allReservations.size() == 0) {
-            for (Room room : rooms){
-                room.setBasePrice(newPrice);
-            }
-            System.out.println("Sucessfully changed the base price across all rooms");
-            return true;
+        if (!this.allReservations.isEmpty()) {
+            System.out.println("There must be no reservations when changing the base price");
+            return false;
+        }   
+        if (newPrice < 100){
+            System.out.println("The new price must be greater than or equal to 100");
+            return false;
         }
-        System.out.println("There must be no reservations when changing the base price");
-        return false;
+        for (Room room : rooms){
+            room.setActualPrice(newPrice);
+        }
+        System.out.println("Sucessfully changed the base price across all rooms");
+        return true;
     }
 
     // the name of function is misleading btw
@@ -160,18 +171,19 @@ public class Hotel {
         }
     }
 
-    public boolean createReservation(int type, int pricePerNight, String guestName, int checkIn, int checkOut){
+    public String createReservation(int type, String guestName, int checkIn, int checkOut){
         Room emptyRoom = findEmptyRoom(type, checkIn, checkOut);
 
         if (emptyRoom != null) {
             String reservationId = randomNumber();
-            Reservation res = new Reservation(pricePerNight,emptyRoom.getRoomNumber(),guestName,reservationId,checkIn,checkOut);
+            Reservation res = new Reservation(emptyRoom.getActualPrice(),emptyRoom.getRoomNumber(),guestName,reservationId,checkIn,checkOut);
             emptyRoom.addReservation(res);
             allReservations.put(reservationId, res);
-            return true;
+            return reservationId;
         } else {
             System.out.println("No available rooms of the specified type for the given date range.");
-            return false;
+            System.out.println("No reservations were created");;
+            return null;
         }
     }
 
@@ -188,24 +200,32 @@ public class Hotel {
                 room.removeReservation(res);
                 this.allReservations.remove(resId, res); // surely this will remove it
                 System.out.println("Reservation sucessfully removed");
+                return true;
             }
         }
         System.out.println("Reservation failed to be removed");
         return false;
     }
-
+    public void printAllRooms(){
+        for (Room room : rooms){
+            System.out.print(room.getRoomNumber()+" ");
+            System.out.println(room.getRoomType());
+        }
+    }
     public void printBasicInfo(){
         System.out.println("Hotel Name: " + this.getName());
         System.out.println("Total Number of Rooms: " + this.getNumOfRooms());
         System.out.println("Estimated Earnings for the Month: " + this.getTotalEarnings());
     }
-    public void printRoomInfo(int roomNumber){
+    public boolean printRoomInfo(int roomNumber){
         for (Room room : this.rooms) {
             if (room.getRoomNumber() == roomNumber) {
                 room.printBasicInfo();
-                break;
+                return true;
             }
         }
+        System.out.println("Could not find room");
+        return false;
     }
     public void printReservationInfo(String reservationId){
         if (allReservations.containsKey(reservationId)){
@@ -235,8 +255,10 @@ public class Hotel {
     }
 
     public int getNumAvailableRooms(int date){
+        if (this.allReservations.isEmpty()){
+            return this.numOfRooms;
+        }
         int count = 0;
-
         for (Room room : rooms) {
             if (room.isAvailable(date)) {
                 count++;
@@ -244,7 +266,6 @@ public class Hotel {
         }
         return count;
     }
-
     public int getNumBookedRooms(int date){
         return this.numOfRooms - this.getNumAvailableRooms(date);
     }
@@ -256,7 +277,11 @@ public class Hotel {
     public int getNumOfRooms(){
         return this.numOfRooms;
     }
+    public double getBasePrice(){
+        return this.basePrice;
+    }
     public void setHotelName(String newName){
         this.name = newName;
     }
+    
 }

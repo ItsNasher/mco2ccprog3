@@ -20,7 +20,7 @@ public class Reservation {
         this.totalPrice = 0.0;
     }
 
-    public Reservation(int pricePerNight, final int roomNumber, final String name, final String reservationId, final int checkIn, final int checkOut){
+    public Reservation(double pricePerNight, final int roomNumber, final String name, final String reservationId, final int checkIn, final int checkOut){
         this.guestName = name;
         this.reservationId = reservationId;
         this.roomNumber = roomNumber;
