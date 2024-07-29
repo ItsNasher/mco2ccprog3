@@ -31,7 +31,7 @@ public class Hotel {
     private void initializeRooms(){
         int floor = 1;
         int roomNumber = 1;
-        
+
         for (int i = 0; i < 50; i++) {
             int roomId = floor * 100 + roomNumber;
             rooms.add(new Room(0,roomId,this.basePrice));
@@ -97,7 +97,7 @@ public class Hotel {
             updateRooms();
             System.out.println("Sucessfully modified rooms");
             return true;
-        } 
+        }
         System.out.println("Rooms must add up to "+this.numOfRooms);
         System.out.println("Cancelling . . .");
         return false;
@@ -113,7 +113,7 @@ public class Hotel {
             System.out.println("Not enough unreserved rooms to delete");
             return false;
         }
-    
+
         int removedCount = 0;
         for (int i = rooms.size() - 1; i >= 0 && removedCount < num; i--) {
             Room room = rooms.get(i);
@@ -132,7 +132,7 @@ public class Hotel {
         if (!this.allReservations.isEmpty()) {
             System.out.println("There must be no reservations when changing the base price");
             return false;
-        }   
+        }
         if (newPrice < 100){
             System.out.println("The new price must be greater than or equal to 100");
             return false;
@@ -148,7 +148,7 @@ public class Hotel {
         Random rand = new Random();
         int ran = rand.nextInt(900000) + 100000;
         String newNumber = Integer.toString(ran);
-    
+
         if (allReservations.containsKey(newNumber)) {
             return randomNumber();
         }
@@ -189,7 +189,7 @@ public class Hotel {
             res.setTotalPrice(discountedPrice);
             System.out.println("Discount code successfully applied");
             discountApplied = true;
-        } 
+        }
         else if (code.equals("STAY4_GET1")){
             if ((res.getCheckOut() - res.getCheckIn() + 1) >= 5){
                 res.setPricePerNight(0, 0);
@@ -208,7 +208,7 @@ public class Hotel {
             } else {
                 System.out.println("The super secret conditions were not satisfied");
             }
-        } 
+        }
 
         if (!discountApplied){
             System.out.println("Wrong discount code");
@@ -251,12 +251,12 @@ public class Hotel {
 
     public boolean removeReservation(String resId){
         Reservation res = this.allReservations.get(resId);
-    
+
         if (res == null) {
             System.out.println("Reservation not found.");
             return false;
         }
-    
+
         for (Room room : rooms) {
             if (room.removeReservationById(resId)) {
                 this.allReservations.remove(resId);
@@ -264,7 +264,7 @@ public class Hotel {
                 return true;
             }
         }
-    
+
         System.out.println("Reservation failed to be removed");
         return false;
     }
@@ -277,26 +277,26 @@ public class Hotel {
             System.out.println(room.getActualPrice());
         }
     }
-    public void printBasicInfo(){
-        System.out.println("Hotel Name: " + this.getName());
-        System.out.println("Total Number of Rooms: " + this.getNumOfRooms());
-        System.out.println("Estimated Earnings for the Month: " + this.getTotalEarnings());
+    public String printBasicInfo(){
+        return "Hotel Name: " + this.getName() + "\n" +
+                "Total Number of Rooms: " + this.getNumOfRooms() + "\n" +
+                "Estimated Earnings for the Month: " + this.getTotalEarnings();
     }
-    public boolean printRoomInfo(int roomNumber){
+
+    //CHANGED A BIT
+    public String printRoomInfo(int roomNumber){
         for (Room room : this.rooms) {
             if (room.getRoomNumber() == roomNumber) {
-                room.printBasicInfo();
-                return true;
+                 room.printBasicInfo();
             }
         }
-        System.out.println("Could not find room");
-        return false;
+        return "Could not find room.";
     }
-    public void printReservationInfo(String reservationId){
+    public String printReservationInfo(String reservationId){
         if (allReservations.containsKey(reservationId)){
-            allReservations.get(reservationId).printBasicInfo();
+            return allReservations.get(reservationId).printBasicInfo();
         } else {
-            System.out.println("Reservation not found.");
+            return "Reservation not found.";
         }
     }
     public void printRoomTypeInfo(){
@@ -310,7 +310,7 @@ public class Hotel {
         Reservation res = allReservations.get(resId);
         int resIndex = 0;
         for (int i = dateStart; i <= dateEnd; i++){
-            System.out.print("Day "+i+": "+String.format("%.0f%%", datePriceModifier[i-1] * 100));    
+            System.out.print("Day "+i+": "+String.format("%.0f%%", datePriceModifier[i-1] * 100));
             System.out.println(" "+res.getPricePerNight(resIndex));
             resIndex++;
         }
@@ -357,5 +357,5 @@ public class Hotel {
     public void setHotelName(String newName){
         this.name = newName;
     }
-    
+
 }
