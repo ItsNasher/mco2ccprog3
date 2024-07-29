@@ -212,8 +212,8 @@ public class ReservationSystemController extends JFrame implements ActionListene
             JOptionPane.showMessageDialog(this, "No room type selected, defaulting to standard room.");
         }
 
-        int checkIn = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-in date [1-30]:"));
-        int checkOut = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-out date [2-31]:"));
+        int checkIn = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-in date (1-30):"));
+        int checkOut = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-out date (2-31):"));
 
         if (checkIn == checkOut) {
             JOptionPane.showMessageDialog(this, "The check-in and check-out dates cannot be the same.");
@@ -246,7 +246,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
         }
 
         selectedHotel.printReservationInfo(resId);
-        selectedHotel.printDatePriceInfo(resId, checkIn, checkOut); // DEBUG PURPOSES ONLY
+        selectedHotel.printDatePriceInfo(resId, checkIn, checkOut);
         int confirmBooking = JOptionPane.showConfirmDialog(this, "Press OK to confirm, Cancel to cancel.");
         if (confirmBooking == JOptionPane.CANCEL_OPTION) {
             selectedHotel.removeReservation(resId);
