@@ -1,3 +1,4 @@
+
 import java.util.Objects;
 import java.util.ArrayList;
 
@@ -52,13 +53,13 @@ public class Reservation {
         return Objects.hash(reservationId);
     }
 
-    public void printBasicInfo(){
-        System.out.println("Guest Name: "+this.guestName);
-        System.out.println("Room Number: "+this.roomNumber);
-        System.out.println("Reservation ID: "+this.reservationId);
-        System.out.println("Check In and Out Dates: "+this.checkIn+" to "+this.checkOut);
-        System.out.println("Total Price: "+this.totalPrice);
-        System.out.println("Price Per Night: "+this.pricePerNight);
+    public String printBasicInfo(){
+        return "Guest Name: " + this.guestName + "\n" +
+                "Room Number: " + this.roomNumber + "\n" +
+                "Reservation ID: " + this.reservationId + "\n" +
+                "Check In and Check Out Dates: " + this.checkIn + " to " + this.checkOut + "\n" +
+                "Total Price: " + this.totalPrice + "\n" +
+                "Price Per Night" + this.pricePerNight;
     }
     public String getReservationId(){
         return this.reservationId;
