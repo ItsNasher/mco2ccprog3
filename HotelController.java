@@ -12,7 +12,7 @@ public class HotelController extends JFrame implements ActionListener {
         this.controller = controller;
         this.hotel = hotel;
 
-        // Initialize components
+        // initializing
         newHotelNameField = new JTextField(20);
         changeNameButton = new JButton("Change Name");
         addRoomsButton = new JButton("Add Rooms");
@@ -23,7 +23,6 @@ public class HotelController extends JFrame implements ActionListener {
         removeHotelButton = new JButton("Remove Hotel");
         editDatePriceModifiersButton = new JButton("Edit Date Price Modifiers");
 
-        // Add action listeners
         changeNameButton.addActionListener(this);
         addRoomsButton.addActionListener(this);
         removeRoomsButton.addActionListener(this);
@@ -33,7 +32,7 @@ public class HotelController extends JFrame implements ActionListener {
         removeHotelButton.addActionListener(this);
         editDatePriceModifiersButton.addActionListener(this);
 
-        // Layout components
+        //frame
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(8, 2));
         panel.add(new JLabel("New Hotel Name:"));
@@ -49,7 +48,6 @@ public class HotelController extends JFrame implements ActionListener {
 
         add(panel);
 
-        // Set frame properties
         setTitle("Manage Hotel - " + hotel.getName());
         pack();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -167,7 +165,7 @@ public class HotelController extends JFrame implements ActionListener {
         if (confirmRemoveHotel == JOptionPane.OK_OPTION) {
             controller.getHotels().remove(hotel);
             JOptionPane.showMessageDialog(this, "Removing hotel");
-            dispose(); // Close the window
+            dispose();
         }
     }
 
