@@ -1,11 +1,12 @@
+
 import java.util.ArrayList;
 
 public class Room {
     int roomNumber;
     int type;   // 0 is standard, 1 is deluxe, 2 is executive
     double actualPrice;
-    private ArrayList<Reservation> reservationList; 
-    
+    private ArrayList<Reservation> reservationList;
+
     public Room (int type, int roomNumber, double basePrice){
         this.type = type;
         this.roomNumber = roomNumber;
@@ -52,7 +53,7 @@ public class Room {
             for (Reservation reservation : this.reservationList) {
                 System.out.println("Days "+reservation.getCheckIn() +" to "+ reservation.getCheckOut());
             }
-        }  
+        }
     }
     public boolean printReservationInfo(String resNo){
         for (Reservation res : reservationList){
