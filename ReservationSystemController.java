@@ -61,16 +61,14 @@ public class ReservationSystemController extends JFrame implements ActionListene
                     JOptionPane.showMessageDialog(this, success ? "Hotel successfully created!" : "Hotel name already exists");
                 }
             }
-            if (choice.getSource() == viewhotel) {
+            if (choice.getSource() == viewhotel)
                 viewHotel();
 
-            }
-            if (choice.getSource() == managehotel) {
+            if (choice.getSource() == managehotel)
+                manageHotel();
 
-            }
-            if (choice.getSource() == simulatebooking) {
-
-            }
+            if (choice.getSource() == simulatebooking)
+                simulateBooking();
     }
     private Hotel getHotel (String hotelName){
         for (Hotel hotel : hotels){
@@ -163,9 +161,101 @@ public class ReservationSystemController extends JFrame implements ActionListene
         }
     }
     private void manageHotel(){ //to do (use the hotel controller)
-
+        String hotel = JOptionPane.showInputDialog("Enter the name of the hotel: ");
+        if (hotel != null && !hotel.trim().isEmpty()){
+            Hotel selectedHotel = getHotel(hotel);
+            if (selectedHotel == null)
+                JOptionPane.showMessageDialog(this, "Hotel not found.");
+            else
+                new HotelController(this, selectedHotel).setVisible(true);
+        }
     }
     public void simulateBooking(){ //to do
-        
+        String guestName = JOptionPane.showInputDialog("Enter the guest name for reservation:");
+        if (guestName == null || guestName.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Guest name cannot be empty.");
+            return;
+        }
+
+        String hotelName = JOptionPane.showInputDialog("Enter the name of the hotel you would like to book:");
+        if (hotelName == null || hotelName.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Hotel name cannot be empty.");
+            return;
+        }
+
+        Hotel selectedHotel = getHotel(hotelName);
+        if (selectedHotel == null) {
+            JOptionPane.showMessageDialog(this, "Hotel not found.");
+            return;
+        }
+
+        String[] roomTypes = {"Standard", "Deluxe", "Executive"};
+        String roomType = (String) JOptionPane.showInputDialog(this, "Enter type of room to book:", "Room Type",
+                JOptionPane.QUESTION_MESSAGE, null, roomTypes, roomTypes[0]);
+        int type = 0;
+        if (roomType != null) {
+            switch (roomType) {
+                case "Standard":
+                    type = 0;
+                    break;
+                case "Deluxe":
+                    type = 1;
+                    break;
+                case "Executive":
+                    type = 2;
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this, "Invalid room type, defaulting to standard room.");
+                    break;
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "No room type selected, defaulting to standard room.");
+        }
+
+        int checkIn = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-in date [1-30]:"));
+        int checkOut = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-out date [2-31]:"));
+
+        if (checkIn == checkOut) {
+            JOptionPane.showMessageDialog(this, "The check-in and check-out dates cannot be the same.");
+            return;
+        }
+        if (checkIn == 31 || checkOut == 1) {
+            JOptionPane.showMessageDialog(this, "The check-in and check-out dates must not be the 1st or 31st.");
+            return;
+        }
+        if (checkIn > checkOut) {
+            JOptionPane.showMessageDialog(this, "The check-out date must not occur before the check-in date.");
+            return;
+        }
+
+        String discountCode = JOptionPane.showInputDialog("Enter a discount code (if applicable). Type 0 if none:");
+        if (discountCode == null || discountCode.trim().isEmpty() || discountCode.equals("0")) {
+            discountCode = null;
+        }
+
+        String resId;
+        if (discountCode == null) {
+            resId = selectedHotel.createReservation(type, guestName, checkIn, checkOut);
+        }
+        else
+            resId = selectedHotel.createReservation(type, guestName, checkIn, checkOut, discountCode);
+
+        if (resId == null) {
+            JOptionPane.showMessageDialog(this, "Failed to create reservation.");
+            return;
+        }
+
+        selectedHotel.printReservationInfo(resId);
+        selectedHotel.printDatePriceInfo(resId, checkIn, checkOut); // DEBUG PURPOSES ONLY
+        int confirmBooking = JOptionPane.showConfirmDialog(this, "Press OK to confirm, Cancel to cancel.");
+        if (confirmBooking == JOptionPane.CANCEL_OPTION) {
+            selectedHotel.removeReservation(resId);
+            JOptionPane.showMessageDialog(this, "Reservation was cancelled.");
+        }
+        else
+            JOptionPane.showMessageDialog(this, "Successfully created reservation ID " + resId);
+    }
+    public ArrayList<Hotel> getHotels(){
+        return hotels;
     }
 }
