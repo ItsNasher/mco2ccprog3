@@ -280,7 +280,10 @@ public class Hotel {
     public String printBasicInfo(){
         return "Hotel Name: " + this.getName() + "\n" +
                 "Total Number of Rooms: " + this.getNumOfRooms() + "\n" +
-                "Estimated Earnings for the Month: " + this.getTotalEarnings();
+                "Estimated Earnings for the Month: " + this.getTotalEarnings() + "\n" +
+                "Standard Rooms: " + this.standardRooms() + "\n" +
+                "Deluxe Rooms: " + this.deluxeRooms() + "\n" +
+                "Executive Rooms: " + this.executiveRooms() + "\n";
     }
 
     //CHANGED A BIT
@@ -357,5 +360,34 @@ public class Hotel {
     public void setHotelName(String newName){
         this.name = newName;
     }
+    //checking each room
+    public int standardRooms() {
+        int count = 0;
+        for (Room room : rooms) {
+            if (room.getRoomType() == 0) {
+                count++;
+            }
+        }
+        return count;
+    }
 
+    public int deluxeRooms() {
+        int count = 0;
+        for (Room room : rooms) {
+            if (room.getRoomType() == 1) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int executiveRooms() {
+        int count = 0;
+        for (Room room : rooms) {
+            if (room.getRoomType() == 2) {
+                count++;
+            }
+        }
+        return count;
+    }
 }
