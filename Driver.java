@@ -2,6 +2,8 @@ import java.util.Scanner;
 
 public class Driver {
     public static void main(String[] args){
+        new ReservationSystemController();
+        /*
         Scanner sc = new Scanner(System.in);
         ReservationSystem hrSystem = new ReservationSystem();
         boolean continueMenu = true;
@@ -30,6 +32,7 @@ public class Driver {
                 continueMenu = false;
                 break;
             }
-        }
+            
+        }*/
     }
 }
