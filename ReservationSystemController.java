@@ -53,49 +53,47 @@ public class ReservationSystemController extends JFrame implements ActionListene
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == createhotel) {
+    public void actionPerformed(ActionEvent choice) { //scanning the input
+            if (choice.getSource() == createhotel) {
                 String newName = JOptionPane.showInputDialog("Input name of new hotel:");
                 if (newName != null && !newName.trim().isEmpty()) {
                     boolean success = createHotel(newName);
                     JOptionPane.showMessageDialog(this, success ? "Hotel successfully created!" : "Hotel name already exists");
                 }
             }
-            if (e.getSource() == viewhotel) {
-                String hotelName = JOptionPane.showInputDialog("Enter the name of the hotel to view:");
-                if (hotelName != null && !hotelName.trim().isEmpty()) {
-                    Hotel hotel = viewHotel(hotelName);
-                    if (hotel != null) {
-                        JOptionPane.showMessageDialog(this, hotel.toString()); // Assuming Hotel has a proper toString method
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Hotel not found.");
-                    }
-                }
+            if (choice.getSource() == viewhotel) {
+                viewHotel();
 
             }
-            if (e.getSource() == managehotel) {
+            if (choice.getSource() == managehotel) {
 
             }
-            if (e.getSource() == simulatebooking) {
+            if (choice.getSource() == simulatebooking) {
 
             }
+    }
+    private Hotel getHotel (String hotelName){
+        for (Hotel hotel : hotels){
+            if (hotel.getName().equalsIgnoreCase(hotelName))
+                return hotel;
+        }
+        return null;
     }
     private boolean createHotel(String newName) {
         for (Hotel hotel : hotels) {
             if (hotel.getName().equalsIgnoreCase(newName)) {
                 return false; // Hotel name already exists
             }
-            return true;
         }
         Hotel hotel = new Hotel(newName);
         hotels.add(hotel);
         return true; // Hotel successfully created
     }
 
-    private Hotel viewHotel(String hotelName) {
-        String hotelName = JOptionPane.showInputDialog("Enter the name of the hotel you would you like to view: ");
-        if (hotelName != null && !hotelName.trim().isEmpty()) {
-            Hotel selectedHotel = getHotel(hotelName);
+    private void viewHotel() {
+        String hotel = JOptionPane.showInputDialog("Enter the name of the hotel you would you like to view: ");
+        if (hotel != null || !hotel.trim().isEmpty()) {
+            Hotel selectedHotel = getHotel(hotel);
             if (selectedHotel == null) {
                 JOptionPane.showMessageDialog(this, "Hotel not found.");
                 return;
@@ -108,15 +106,24 @@ public class ReservationSystemController extends JFrame implements ActionListene
                 int choice = JOptionPane.showOptionDialog(this, "Choose an Option: ",
                         "Hotel Menu", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
                         options, options[0]);
+                //for x
+                if (choice == -1){
+                    menu = false;
+                    break;
+                }
 
                 switch (choice) {
-                    case 1: //basic info
+                    case 0: //basic info
                         JOptionPane.showMessageDialog(this, selectedHotel.printBasicInfo());
                         break; // printBasicinfo isnt inline with what the parameter is looking for ^
 
-                    case 2: //room availability
+                    case 1: //room availability
                         String chooseday = JOptionPane.showInputDialog("Enter a day in the month (1-31): ");
                         int day = Integer.parseInt(chooseday);
+                        if (day < 1 || day > 31){
+                            JOptionPane.showMessageDialog(this, "Invalid day. Enter a value between 1 to 31.");
+                            break;
+                        }
                         JOptionPane.showMessageDialog(this, "Number of available rooms" +
                                 selectedHotel.getNumAvailableRooms(day) + "\n" + "Number of booked rooms" +
                                 selectedHotel.getNumBookedRooms(day));
@@ -125,26 +132,40 @@ public class ReservationSystemController extends JFrame implements ActionListene
                         System.out.println("Number of booked Rooms: " + selectedHotel.getNumBookedRooms(day));
                         break;
 
-                    case 3:
-                        System.out.println("Enter the room number: ");
-                        int roomNumber = sc.nextInt();
-                        sc.nextLine();
-                        selectedHotel.printRoomInfo(roomNumber);
+                    case 2: //room info
+                        String roomNumber = JOptionPane.showInputDialog("Enter the room number: ");
+                        try {
+                            int room = Integer.parseInt(roomNumber);
+                            String info = selectedHotel.printRoomInfo(room);
+                            if (info != null)
+                                JOptionPane.showMessageDialog(this, info);
+                            else
+                                JOptionPane.showMessageDialog(this, info);
+                        }catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(this, "Invalid input, enter another value.");
+                        }
                         break;
-
-                    case 4:
-                        System.out.println("Enter a reservation number: ");
-                        String resNo = sc.nextLine();
-
-                        selectedHotel.printReservationInfo(resNo);
+                    case 3: //reservation info
+                        String reservationId = JOptionPane.showInputDialog("Enter a reservation number: ");
+                        String reservationInfo = selectedHotel.printReservationInfo(reservationId);
+                        if (reservationInfo != null)
+                            JOptionPane.showMessageDialog(this, reservationInfo);
+                        else
+                            JOptionPane.showMessageDialog(this, "Reservation not found.");
                         break;
-                    case 5:
+                    case 4: //main menu
                         menu = false;
                         break;
                     default:
-                        System.out.println("Invalid choice. Please try again.");
+                        JOptionPane.showMessageDialog(this, "Invalid choice. Please try again");
                 }
             }
         }
+    }
+    private void manageHotel(){ //to do (use the hotel controller)
+
+    }
+    public void simulateBooking(){ //to do
+        
     }
 }
