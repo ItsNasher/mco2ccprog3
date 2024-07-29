@@ -208,12 +208,11 @@ public class ReservationSystemController extends JFrame implements ActionListene
                     JOptionPane.showMessageDialog(this, "Invalid room type, defaulting to standard room.");
                     break;
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "No room type selected, defaulting to standard room.");
-        }
+        } else
+            JOptionPane.showMessageDialog(this, "No room type was selected, defaulting to standard room.");
 
-        int checkIn = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-in date (1-30):"));
-        int checkOut = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-out date (2-31):"));
+        int checkIn = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-in date [1-30]:"));
+        int checkOut = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-out date [2-31]:"));
 
         if (checkIn == checkOut) {
             JOptionPane.showMessageDialog(this, "The check-in and check-out dates cannot be the same.");
