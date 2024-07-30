@@ -7,6 +7,10 @@ import javax.swing.JFrame;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
+/**
+ * Used for Handling the GUI version of the reservation System.
+ */
 public class ReservationSystemController extends JFrame implements ActionListener {
     JButton createhotel;
     JButton viewhotel;
@@ -15,6 +19,9 @@ public class ReservationSystemController extends JFrame implements ActionListene
 
     private ArrayList<Hotel> hotels = new ArrayList<>();
 
+    /**
+     * Initial menu/frame of the program.
+     */
     ReservationSystemController() {
         //separate buttons for each
         createhotel = new JButton();
@@ -52,6 +59,9 @@ public class ReservationSystemController extends JFrame implements ActionListene
         this.add(simulatebooking);
     }
 
+    /**
+     * @param choice the event to be processed
+     */
     @Override
     public void actionPerformed(ActionEvent choice) { //scanning the input
             if (choice.getSource() == createhotel) {
@@ -70,6 +80,11 @@ public class ReservationSystemController extends JFrame implements ActionListene
             if (choice.getSource() == simulatebooking)
                 simulateBooking();
     }
+
+    /**
+     * @param hotelName The name of the hotel to get information from.
+     * @return Returns the hotel.
+     */
     private Hotel getHotel (String hotelName){
         for (Hotel hotel : hotels){
             if (hotel.getName().equalsIgnoreCase(hotelName))
@@ -77,6 +92,11 @@ public class ReservationSystemController extends JFrame implements ActionListene
         }
         return null;
     }
+
+    /**
+     * @param newName The name of the newly created hotel.
+     * @return Returns a true or false statement after the hotel is created or not.
+     */
     private boolean createHotel(String newName) {
         for (Hotel hotel : hotels) {
             if (hotel.getName().equalsIgnoreCase(newName)) {
@@ -88,6 +108,9 @@ public class ReservationSystemController extends JFrame implements ActionListene
         return true; // Hotel successfully created
     }
 
+    /**
+     * Allows for viewing of the hotels information.
+     */
     private void viewHotel() {
         String hotel = JOptionPane.showInputDialog("Enter the name of the hotel you would you like to view: ");
         if (hotel != null || !hotel.trim().isEmpty()) {
@@ -160,7 +183,11 @@ public class ReservationSystemController extends JFrame implements ActionListene
             }
         }
     }
-    private void manageHotel(){ //to do (use the hotel controller)
+
+    /**
+     * Used to edit the hotels components.
+     */
+    private void manageHotel(){ //(uses the hotel controller)
         String hotel = JOptionPane.showInputDialog("Enter the name of the hotel: ");
         if (hotel != null && !hotel.trim().isEmpty()){
             Hotel selectedHotel = getHotel(hotel);
@@ -170,6 +197,10 @@ public class ReservationSystemController extends JFrame implements ActionListene
                 new HotelController(this, selectedHotel).setVisible(true);
         }
     }
+
+    /**
+     * Used to simulate how a consumer would book into this hotel.
+     */
     public void simulateBooking(){ //to do
         String guestName = JOptionPane.showInputDialog("Enter the guest name for reservation:");
         if (guestName == null || guestName.trim().isEmpty()) {
