@@ -2,25 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-/**
- * A version of the hotel class that can be handled by the GUI. Not necessarily replacing the Hotel class,
- * but moreso making it easier to change information about the hotel.
- */
 public class HotelController extends JFrame implements ActionListener {
     private Hotel hotel;
     private ReservationSystemController controller;
     private JTextField newHotelNameField;
     private JButton changeNameButton, addRoomsButton, removeRoomsButton, modifyRoomsButton, updateBasePriceButton, removeReservationButton, removeHotelButton, editDatePriceModifiersButton;
 
-    /**
-     * @param controller A instance of ReservationSystemController to make it easier to use methods from that class.
-     * @param hotel Instance of the hotel chosen to be modified.
-     */
     public HotelController(ReservationSystemController controller, Hotel hotel) {
         this.controller = controller;
         this.hotel = hotel;
 
-        // Initialize components
+        // initializing
         newHotelNameField = new JTextField(20);
         changeNameButton = new JButton("Change Name");
         addRoomsButton = new JButton("Add Rooms");
@@ -31,7 +23,6 @@ public class HotelController extends JFrame implements ActionListener {
         removeHotelButton = new JButton("Remove Hotel");
         editDatePriceModifiersButton = new JButton("Edit Date Price Modifiers");
 
-        // Add action listeners
         changeNameButton.addActionListener(this);
         addRoomsButton.addActionListener(this);
         removeRoomsButton.addActionListener(this);
@@ -41,7 +32,7 @@ public class HotelController extends JFrame implements ActionListener {
         removeHotelButton.addActionListener(this);
         editDatePriceModifiersButton.addActionListener(this);
 
-        // Layout components
+        //frame
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(8, 2));
         panel.add(new JLabel("New Hotel Name:"));
@@ -57,16 +48,12 @@ public class HotelController extends JFrame implements ActionListener {
 
         add(panel);
 
-        // Set frame properties
         setTitle("Manage Hotel - " + hotel.getName());
         pack();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
     }
 
-    /**
-     * @param choice the event to be processed.
-     */
     @Override
     public void actionPerformed(ActionEvent choice) {
         if (choice.getSource() == changeNameButton) {
@@ -88,9 +75,6 @@ public class HotelController extends JFrame implements ActionListener {
         }
     }
 
-    /**
-     * Used to change the name of the hotel.
-     */
     private void changeHotelName() {
         String newHotelName = newHotelNameField.getText();
         if (newHotelName.isEmpty()) {
@@ -115,9 +99,6 @@ public class HotelController extends JFrame implements ActionListener {
         }
     }
 
-    /**
-     * Adds to the total number of rooms.
-     */
     private void addRooms() {
         String addRoomsStr = JOptionPane.showInputDialog(this, "Enter number of rooms to add:");
         if (addRoomsStr != null) {
@@ -127,25 +108,19 @@ public class HotelController extends JFrame implements ActionListener {
         }
     }
 
-    /**
-     * Removes from the total number of rooms.
-     */
     private void removeRooms() {
-        int totalRooms = hotel.getNumOfRooms();
+        //int totalRooms = hotel.getNumOfRooms();
         String deleteRoomsStr = JOptionPane.showInputDialog(this, "Enter number of rooms to delete:");
         if (deleteRoomsStr != null) {
             int deleteRooms = Integer.parseInt(deleteRoomsStr);
             int confirmDelete = JOptionPane.showConfirmDialog(this, "Press OK to confirm you will delete " + deleteRooms + " rooms\nPress Cancel to cancel");
             if (confirmDelete == JOptionPane.OK_OPTION) {
                 hotel.removeRooms(deleteRooms);
-                JOptionPane.showMessageDialog(this, "Room count = " + totalRooms);
+                JOptionPane.showMessageDialog(this, "Room count = " + hotel.getNumOfRooms());
             }
         }
     }
 
-    /**
-     * Allows to modify the amount of types of rooms in the hotel.
-     */
     private void modifyRooms() {
         int totalRooms = hotel.getNumOfRooms();
         int standard = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter new number of standard rooms:"));
@@ -162,9 +137,6 @@ public class HotelController extends JFrame implements ActionListener {
         }
     }
 
-    /**
-     * Updates the base price per night of the rooms in the hotel.
-     */
     private void updateBasePrice() {
         double price = hotel.getBasePrice();
         String newPriceStr = JOptionPane.showInputDialog(this, "Current Price: " +
@@ -173,14 +145,13 @@ public class HotelController extends JFrame implements ActionListener {
             double newPrice = Double.parseDouble(newPriceStr);
             int confirmPrice = JOptionPane.showConfirmDialog(this, "Press OK to confirm new base price of " + newPrice + "\nPress Cancel to cancel");
             if (confirmPrice == JOptionPane.OK_OPTION) {
-                hotel.updateBasePrice(newPrice);
+                if (!hotel.updateBasePrice(newPrice)){
+                    JOptionPane.showInputDialog("There must be no reservations when changing the base price");
+                }
             }
         }
     }
 
-    /**
-     * Using a reservation ID, removes that reservation from the room.
-     */
     private void removeReservation() {
         String removeId = JOptionPane.showInputDialog(this, "Enter reservation ID to remove:");
         if (removeId != null) {
@@ -191,21 +162,15 @@ public class HotelController extends JFrame implements ActionListener {
         }
     }
 
-    /**
-     * Removes a hotel from the list.
-     */
     private void removeHotel() {
         int confirmRemoveHotel = JOptionPane.showConfirmDialog(this, "Are you sure you will delete hotel " + hotel.getName() + "\nPress OK to confirm, Cancel to cancel");
         if (confirmRemoveHotel == JOptionPane.OK_OPTION) {
             controller.getHotels().remove(hotel);
             JOptionPane.showMessageDialog(this, "Removing hotel");
-            dispose(); // Close the window
+            dispose();
         }
     }
 
-    /**
-     * Allows for editing of price on certain dates.
-     */
     private void editDatePriceModifiers() {
         String[] options = {"Single date", "Multiple dates", "Return to menu"};
         int dpmChoice = JOptionPane.showOptionDialog(this, "Set date price modifier for:", "Edit Date Price Modifiers",
@@ -214,10 +179,21 @@ public class HotelController extends JFrame implements ActionListener {
         switch (dpmChoice) {
             case 0:
                 String singleDate = JOptionPane.showInputDialog(this, "Enter the date:");
-                double singleDatePrice = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter the price:"));
+                double singleDatePrice = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter the new percentage modifier:"));
                 hotel.setDatePriceModifier(Integer.parseInt(singleDate), singleDatePrice);
                 JOptionPane.showMessageDialog(this, "Date price modifier added");
                 break;
+            case 1:
+                String firstDate = JOptionPane.showInputDialog(this, "Enter the first date:");
+                String lastDate = JOptionPane.showInputDialog(this, "Enter the last date:");
+                double multipleDatePrice = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter the new percentage modifier:"));
+                for (int i = Integer.parseInt(firstDate); i <= Integer.parseInt(lastDate); i++){
+                    hotel.setDatePriceModifier(i, multipleDatePrice);
+                }
+                
+                JOptionPane.showMessageDialog(this, "Date price modifier added");
+                break;
+
             default:
                 break;
         }

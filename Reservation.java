@@ -58,7 +58,7 @@ public class Reservation {
                 "Room Number: " + this.roomNumber + "\n" +
                 "Reservation ID: " + this.reservationId + "\n" +
                 "Check In and Check Out Dates: " + this.checkIn + " to " + this.checkOut + "\n" +
-                "Total Price: " + this.totalPrice + "\n" +
+                "Total Price: " + String.format("%.2f",this.totalPrice) + "\n" +
                 "Price Per Night" + this.pricePerNight;
     }
     public String getReservationId(){
