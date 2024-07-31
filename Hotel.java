@@ -2,8 +2,10 @@ import java.util.Random;
 import java.util.HashMap;
 import java.util.ArrayList;
 /**
- * The class used to handle the initial information of the hotel.
- */
+* The Hotel class represents a hotel with rooms, reservations, and pricing details.
+* The class also holds an array list of rooms, a hashmap of all the reservations across the hotel
+* And an array for the date price modifiers representing each index as a day within the month
+*/
 public class Hotel {
     private String name;
     private int numOfRooms;
@@ -17,8 +19,9 @@ public class Hotel {
     private double[] datePriceModifier;
 
     /**
+     * Constructor to initialize the Hotel object with a name.
+     *
      * @param name The name of the hotel.
-     * The initial template of a hotel.
      */
     public Hotel(String name){
         this.name = name;
@@ -34,9 +37,9 @@ public class Hotel {
         initializeRooms();
     }
     /**
-     * Initializes 50 rooms (Note that all of these rooms are standard by default).
+     * Initializes the rooms for the hotel.
+     * The system relies on the initialization of 50 rooms regardless of usage otherwise removedRoomIds break
      */
-    //system relies on the initialization of 50 rooms regardless of usage otherwise removedRoomIds break
     private void initializeRooms(){
         int floor = 1;
         int roomNumber = 1;
@@ -55,9 +58,11 @@ public class Hotel {
         }
     }
     /**
-     * @param day The chosen date.
-     * @param multiplier The amount to be multiplied to the base price.
-     * @return
+     * Sets the price modifier for a specific day.
+     *
+     * @param day The day of the month (1-31).
+     * @param multiplier The price multiplier (as a percentage).
+     * @return True if the price modifier was set successfully, false otherwise.
      */
     public boolean setDatePriceModifier(int day, double multiplier){
         if (day < 1 || day > 31){
@@ -68,7 +73,7 @@ public class Hotel {
         return true;
     }
     /**
-     * Used to set the proper prices based on the type of room.
+     * Updates the room types and their prices based on the current configuration.
      */
     private void updateRooms(){
         for (int i = 0; i < this.standardRooms; i++){
@@ -85,8 +90,9 @@ public class Hotel {
         }
     }
     /**
-     * @param num Number of rooms to be added.
-     * Adds rooms to the hotel.
+     * Adds a specified number of rooms to the hotel.
+     *
+     * @param num The number of rooms to add.
      */
     public void addRooms(int num) {
         if (num <= 0) {
@@ -109,12 +115,13 @@ public class Hotel {
         }
         System.out.println("Sucessfully added "+num+" rooms");
     }
-
     /**
-     * @param stand Number of standard rooms.
-     * @param deluxe Number of deluxe rooms.
-     * @param exec Number of executive rooms.
-     * @return Returns a true or false value whether or not the rooms were successfully modified.
+     * Modifies the number of standard, deluxe, and executive rooms in the hotel.
+     *
+     * @param stand The number of standard rooms.
+     * @param deluxe The number of deluxe rooms.
+     * @param exec The number of executive rooms.
+     * @return True if the rooms were modified successfully, false otherwise.
      */
     public boolean modifyRooms(int stand, int deluxe, int exec){
         if ((stand + deluxe + exec) == this.numOfRooms){
@@ -130,10 +137,11 @@ public class Hotel {
         return false;
     }
     /**
-     * @param num Amount of rooms to be removed from the hotel.
-     * @return Returns a true or false value based on whether or not rooms were removed.
+     * Removes a specified number of rooms from the hotel, starting from the last room to the first.
+     *
+     * @param num The number of rooms to remove.
+     * @return True if the rooms were removed successfully, false otherwise.
      */
-    // removal is from right to left
     public boolean removeRooms(int num) {
         if (num == this.numOfRooms){
             System.out.println("You cannot remove all the rooms of a hotel");
@@ -158,10 +166,11 @@ public class Hotel {
         System.out.println("Successfully removed " + removedCount + " rooms.");
         return true;
     }
-
     /**
-     * @param newPrice The new price of the room.
-     * @return Returns a true or false value based on whether or not the prices were changed.
+     * Updates the base price for all rooms in the hotel.
+     *
+     * @param newPrice The new base price.
+     * @return True if the base price was updated successfully, false otherwise.
      */
     public boolean updateBasePrice(double newPrice){
         if (!this.allReservations.isEmpty()) {
@@ -179,10 +188,11 @@ public class Hotel {
     }
 
     /**
-     * @return Returns a random string of numbers which corresponds to the reservation ID.
+     * Generates a random reservation ID.
+     *
+     * @return A unique reservation ID.
      */
-    // the name of function is misleading btw
-    private String randomNumber() {
+    private String randomNumber() { // the name of function is misleading btw
         Random rand = new Random();
         int ran = rand.nextInt(900000) + 100000;
         String newNumber = Integer.toString(ran);
@@ -192,22 +202,25 @@ public class Hotel {
         }
         return newNumber;
     }
-
     /**
-     * @param type Type of room. 1 for standard, 2 for deluxe and 3 for executive.
-     * @param checkIn Check in date for the reservation.
-     * @param checkOut Check out date for the reservation.
-     * @return Returns a room that fits the criteria.
+     * Finds an empty room of a specified type for a given date range.
+     *
+     * @param type The type of room (0: Standard, 1: Deluxe, 2: Executive).
+     * @param checkIn The check-in date.
+     * @param checkOut The check-out date.
+     * @return The first available room of the specified type, or null if none are available.
      */
     public Room findEmptyRoom(int type, int checkIn, int checkOut) {
         return findEmptyRoomRecursive(type, checkIn, checkOut, 0);
     }
     /**
-     * @param type Type of room. 0 for standard, 1 for deluxe and 2 for executive.
-     * @param checkIn Check in date for the reservation.
-     * @param checkOut Check out date for the reservation.
-     * @param index The number of the room that is being checked.
-     * @return Returns a room that fits the criteria.
+     * Recursively finds an empty room of a specified type for a given date range.
+     *
+     * @param type The type of room (0: Standard, 1: Deluxe, 2: Executive).
+     * @param checkIn The check-in date.
+     * @param checkOut The check-out date.
+     * @param index The current room index.
+     * @return The first available room of the specified type, or null if none are available.
      */
     private Room findEmptyRoomRecursive(int type, int checkIn, int checkOut, int index) {
         // Check if it has reached all the rooms of the hotel
@@ -233,9 +246,11 @@ public class Hotel {
         }
     }
     /**
-     * @param code The discount code to be redeemed or not.
-     * @param res The total and new price after the discount code.
-     */
+    * Applies a discount code to a reservation.
+    *
+    * @param code The discount code.
+    * @param res The reservation to apply the discount to.
+    */
     private void applyDiscountCode(String code, Reservation res){
         boolean discountApplied = false;
 
@@ -269,13 +284,14 @@ public class Hotel {
             System.out.println("Wrong discount code");
         }
     }
-
     /**
-     * @param type Type of room to be stayed in.
-     * @param guestName Name of the guest staying.
-     * @param checkIn Check in date of the reservation.
-     * @param checkOut Check out date of the reservation.
-     * @return Returns either the reservation id of the guest if successful, or null if not.
+     * Creates a reservation for a room of the specified type and returns the reservation ID.
+     *
+     * @param type      the type of room (0 for standard, 1 for deluxe, 2 for executive)
+     * @param guestName the name of the guest
+     * @param checkIn   the check-in date
+     * @param checkOut  the check-out date
+     * @return the reservation ID if a room is available, otherwise null
      */
     public String createReservation(int type, String guestName, int checkIn, int checkOut){
         Room emptyRoom = findEmptyRoom(type, checkIn, checkOut);
@@ -293,13 +309,15 @@ public class Hotel {
         }
     }
     /**
-     * @param type Type of room to be stayed in.
-     * @param guestName Name of the guest.
-     * @param checkIn Check in date of the reservation.
-     * @param checkOut Check out date of the reservation.
-     * @param discountCode Discount code to be applied.
-     * @return Returns either the reservation id of the guest if successful, or null if not.
-     * This method is different as it is used if the guest enters a valid discount code.
+     * This is an overload method for createReservation
+     * Creates a reservation for a room of the specified type with a discount code and returns the reservation ID.
+     *
+     * @param type        the type of room (0 for standard, 1 for deluxe, 2 for executive)
+     * @param guestName   the name of the guest
+     * @param checkIn     the check-in date
+     * @param checkOut    the check-out date
+     * @param discountCode the discount code to apply to the reservation
+     * @return the reservation ID if a room is available, otherwise null
      */
     public String createReservation(int type, String guestName, int checkIn, int checkOut, String discountCode){
         Room emptyRoom = findEmptyRoom(type, checkIn, checkOut);
@@ -319,10 +337,11 @@ public class Hotel {
             return null;
         }
     }
-
     /**
-     * @param resId Reservation ID given to the guest.
-     * @return Returns a true or false value whether or not it was able to find the reservation.
+     * Removes a reservation with the specified ID.
+     *
+     * @param resId the reservation ID
+     * @return true if the reservation was successfully removed, otherwise false
      */
     public boolean removeReservation(String resId){
         Reservation res = this.allReservations.get(resId);
@@ -343,11 +362,10 @@ public class Hotel {
         System.out.println("Reservation failed to be removed");
         return false;
     }
-
     /**
-     * Prints all of the rooms.
+     * Prints the basic information of all rooms in the hotel.
+     * Mostly for debugging purposes
      */
-    // mostly for debug (does this count as bonus feature? lol)
     public void printAllRooms(){
         for (Room room : rooms){
             System.out.print(room.getRoomNumber()+" ");
@@ -356,7 +374,9 @@ public class Hotel {
         }
     }
     /**
-     * @return Returns the information of the hotel.
+     * Prints the basic information of the hotel.
+     *
+     * @return a string containing the basic information of the hotel
      */
     public String printBasicInfo(){
         return "Hotel Name: " + this.getName() + "\n" +
@@ -366,13 +386,12 @@ public class Hotel {
                 "Deluxe Rooms: " + this.deluxeRooms() + "\n" +
                 "Executive Rooms: " + this.executiveRooms() + "\n";
     }
-
     /**
-     * @param roomNumber Number of the room to print the information.
-     * @return Returns a string containing the basic information of the room or "Could not find room.".
+     * Prints the information of a specific room.
+     *
+     * @param roomNumber the room number
+     * @return an ArrayList containing the information of the room
      */
-    //CHANGED A BIT
-    // changed to return arrlist
     public ArrayList<String> printRoomInfo(int roomNumber){
         for (Room room : this.rooms) {
             if (room.getRoomNumber() == roomNumber) {
@@ -386,8 +405,10 @@ public class Hotel {
         return null;
     }
     /**
-     * @param reservationId Reservation ID given to the guest
-     * @return Returns a string containing the information of the reservation or "Reservation not found."
+     * Prints the information of a specific reservation.
+     *
+     * @param reservationId the reservation ID
+     * @return a string containing the information of the reservation
      */
     public String printReservationInfo(String reservationId){
         if (allReservations.containsKey(reservationId)){
@@ -397,7 +418,7 @@ public class Hotel {
         }
     }
     /**
-     * Prints the number of rooms and how many of each type.
+     * Prints the information about the types of rooms in the hotel.
      */
     public void printRoomTypeInfo(){
         System.out.println("Number of rooms, ");
@@ -406,10 +427,12 @@ public class Hotel {
         System.out.println("Executive rooms: "+this.executiveRooms);
     }
     /**
-     * Total number of earnings based on the reservations and price.
-     * @return total earnings.
+     * Prints the date price information for a specific reservation.
+     *
+     * @param resId     the reservation ID
+     * @param dateStart the start date
+     * @param dateEnd   the end date
      */
-    // DEBUG PURPOSES ONLY
     public void printDatePriceInfo(String resId, int dateStart, int dateEnd){
         Reservation res = allReservations.get(resId);
         int resIndex = 0;
@@ -431,10 +454,11 @@ public class Hotel {
         }
         return totalEarnings;
     }
-
     /**
-     * @param date Date to see the available rooms on that said date.
-     * @return Returns number of rooms available on that date.
+     * Gets the number of available rooms for a specific date.
+     *
+     * @param date the date
+     * @return the number of available rooms
      */
     public int getNumAvailableRooms(int date){
         if (this.allReservations.isEmpty()){
@@ -449,41 +473,51 @@ public class Hotel {
         return count;
     }
     /**
-     * @param date Date to see the booked rooms in.
-     * @return Returns the number of booked rooms on that date.
+     * Subtracts the number of available rooms with the total number of rooms to get the number of booked rooms.
+     *
+     * @param date the date
+     * @return the number of booked rooms
      */
     public int getNumBookedRooms(int date){
         return this.numOfRooms - this.getNumAvailableRooms(date);
     }
-
     /**
-     * @return Name of the hotel.
+     * Gets the name of the hotel.
+     *
+     * @return the name of the hotel
      */
     public String getName(){
         return this.name;
     }
-
     /**
-     * @return Number of rooms of the hotel.
+     * Gets the number of rooms in the hotel.
+     *
+     * @return the number of rooms
      */
     public int getNumOfRooms(){
         return this.numOfRooms;
     }
     /**
-     * @return Base price of the hotel.
+     * Gets the base price of the rooms.
+     *
+     * @return the base price of the rooms
      */
     public double getBasePrice(){
         return this.basePrice;
     }
     /**
-     * @param newName New name of the hotel
+     * Sets the name of the hotel.
+     *
+     * @param newName the new name of the hotel
      */
     public void setHotelName(String newName){
         this.name = newName;
     }
-    //checking each room
+
     /**
-     * @return The count of how many standard type rooms there are in the hotel.
+     * Gets the number of standard rooms in the hotel.
+     *
+     * @return the number of standard rooms
      */
     public int standardRooms() {
         int count = 0;
@@ -494,9 +528,10 @@ public class Hotel {
         }
         return count;
     }
-
     /**
-     * @return The count of how many deluxe type rooms there are in the hotel.
+     * Gets the number of deluxe rooms in the hotel.
+     *
+     * @return the number of deluxe rooms
      */
     public int deluxeRooms() {
         int count = 0;
@@ -507,9 +542,10 @@ public class Hotel {
         }
         return count;
     }
-
     /**
-     * @return The count of how many executive type rooms there are in the hotel.
+     * Gets the number of executive rooms in the hotel.
+     *
+     * @return the number of executive rooms
      */
     public int executiveRooms() {
         int count = 0;

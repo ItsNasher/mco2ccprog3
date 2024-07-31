@@ -2,7 +2,9 @@
 import java.util.Objects;
 import java.util.ArrayList;
 /**
- * Class to handle the reservations of the guests.
+ * The reservation class represents a reservation when simulate booking is used in the reservation system
+ * A reservation includes the guest name, its ID, room number, check in and out d ates, total price
+ * And an array list that represents each element as the price for that specific date
  */
 public class Reservation {
     final String guestName;
@@ -14,11 +16,11 @@ public class Reservation {
     private ArrayList<Double> pricePerNight;
 
     /**
-     * @param reservationId Reservation ID of the guest.
-     * Checks for unique ID.
+     * Constructs a Reservation object given a specified reservation ID.
+     * This is used for checking unique ID in methods such as the removeReservation method in Hotel).
+     *
+     * @param reservationId the reservation ID
      */
-    // this exists for checking unique id
-    // see removeReservation in hotel
     public Reservation(final String reservationId) {
         this.reservationId = reservationId;
         this.guestName = null;
@@ -28,15 +30,16 @@ public class Reservation {
         this.pricePerNight = null;
         this.totalPrice = 0.0;
     }
-
     /**
-     * @param pricePerNight Price per night of the reservation.
-     * @param datePriceModifier Changes on the reservation price based on the days stayed.
-     * @param roomNumber Number of the room in the reservation.
-     * @param name Name of the guest.
-     * @param reservationId Reservation ID given to the guest after succesful reservation.
-     * @param checkIn Check in day of the reservation.
-     * @param checkOut Check out day of the reservation.
+     * Constructs a Reservation object with the specified details.
+     *
+     * @param pricePerNight     the base price per night for the room
+     * @param datePriceModifier the array of price modifiers for each date
+     * @param roomNumber        the room number
+     * @param name              the guest's name
+     * @param reservationId     the reservation ID
+     * @param checkIn           the check-in date
+     * @param checkOut          the check-out date
      */
     public Reservation(double pricePerNight, double datePriceModifier[], final int roomNumber, final String name, final String reservationId, final int checkIn, final int checkOut){
         this.guestName = name;
@@ -56,11 +59,11 @@ public class Reservation {
         this.totalPrice = total;
     }
     /**
-     * Compares this Reservation to another object for equality.
-     * Two reservations are considered equal if they have the same reservation ID.
+     * This overrides the equals method for all reservation objects
+     * Compares this reservation to the specified object.
      *
-     * @param obj The object to compare with this reservation.
-     * @return true if the reservations are equal; false otherwise.
+     * @param obj the object to compare this reservation with
+     * @return true if the object's reservation ID is equal to the reservation object it's comparing with, otherwise false
      */
     @Override
     public boolean equals(Object obj) {
@@ -69,20 +72,20 @@ public class Reservation {
         Reservation reservation = (Reservation) obj;
         return reservationId == reservation.reservationId;
     }
-
     /**
-     * Returns a hash code value for this reservation.
-     * The hash code is based on the reservation ID.
+     * Returns a hash code value for the reservation.
+     * This overrides the hashCode method to return the reservation ID instead
      *
-     * @return A hash code value for this reservation.
+     * @return a hash code value for this reservation
      */
     @Override
     public int hashCode() {
         return Objects.hash(reservationId);
     }
-
     /**
-     * @return Returns a string containing the basic information of the reservation.
+     * Prints the basic information of the reservation.
+     *
+     * @return a string containing the basic information of the reservation
      */
     public String printBasicInfo(){
         return "Guest Name: " + this.guestName + "\n" +
@@ -93,54 +96,67 @@ public class Reservation {
                 "Price Per Night" + this.pricePerNight;
     }
     /**
-     * @return Returns the reservation ID.
+     * Gets the reservation ID.
+     *
+     * @return the reservation ID
      */
     public String getReservationId(){
         return this.reservationId;
     }
     /**
-     * @return Returns the check in day.
+     * Gets the check-in date.
+     *
+     * @return the check-in date
      */
     public int getCheckIn(){
         return this.checkIn;
     }
     /**
-     * @return Returns the check out day.
+     * Gets the check-out date.
+     *
+     * @return the check-out date
      */
     public int getCheckOut(){
         return this.checkOut;
     }
     /**
-     * @return Returns the total price of the reservation.
+     * Gets the total price of the reservation.
+     *
+     * @return the total price of the reservation
      */
     public double getTotalPrice(){
         return this.totalPrice;
     }
     /**
-     * @return Returns the room number.
+     * Gets the room number.
+     *
+     * @return the room number
      */
     public int getRoomNumber(){
         return this.roomNumber;
     }
     /**
-     * Returns the price per night for a specific day in the reservation period.
-     * @param index The index of the day (0-based) in the reservation period.
-     * @return The price per night for the specified day.
+     * Gets the price per night for a specific date.
+     *
+     * @param index the index of the date
+     * @return the price per night for the specified date
      */
     public double getPricePerNight(int index){
         return this.pricePerNight.get(index);
     }
     /**
-     * Sets the price per night for a specific day in the reservation period.
-     * @param index The index of the day (1-31) in the reservation period.
-     * @param price The new price per night for the specified day.
+     * Sets the price per night for a specific date.
+     *
+     * @param index the index of the date
+     * @param price the new price per night for the specified date
      */
     public void setPricePerNight(int index, double price){
         this.pricePerNight.set(index,price);
     }
     /**
-     * Sets the total price of this reservation.
-     * @param totalPrice The new total price of the reservation.
+     * Sets the total price of the reservation.
+     *
+     * @param totalPrice the new total price
      */
     public void setTotalPrice(double totalPrice){
         this.totalPrice = totalPrice;

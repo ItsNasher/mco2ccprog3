@@ -2,23 +2,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 /**
- * A version of the hotel class that can be handled by the GUI. Not necessarily replacing the Hotel class,
- * but moreso making it easier to change information about the hotel.
+ * This class represents the GUI elements of the Hotel class.
  */
 public class HotelController extends JFrame implements ActionListener {
-    private Hotel hotel; //instance of the hotel that is being managed
-    private ReservationSystemController controller; //Allows for accessing methods from ReservationSystemController
+    private Hotel hotel;
+    private ReservationSystemController controller;
     private JTextField newHotelNameField;
     private JButton changeNameButton, addRoomsButton, removeRoomsButton, modifyRoomsButton, updateBasePriceButton, removeReservationButton, removeHotelButton, editDatePriceModifiersButton;
+
     /**
-     * @param controller A instance of ReservationSystemController to make it easier to use methods from that class.
-     * @param hotel Instance of the hotel chosen to be modified.
+     * Constructor for the HotelController class.
+     * @param controller    the controller of the reservation system
+     * @param hotel         the hotel the user is working with
      */
     public HotelController(ReservationSystemController controller, Hotel hotel) {
         this.controller = controller;
         this.hotel = hotel;
 
-        // initializing the GUI for managing the hotel.
+        // initializing
         newHotelNameField = new JTextField(20);
         changeNameButton = new JButton("Change Name");
         addRoomsButton = new JButton("Add Rooms");
@@ -29,7 +30,6 @@ public class HotelController extends JFrame implements ActionListener {
         removeHotelButton = new JButton("Remove Hotel");
         editDatePriceModifiersButton = new JButton("Edit Date Price Modifiers");
 
-        //Action listeners to the buttons.
         changeNameButton.addActionListener(this);
         addRoomsButton.addActionListener(this);
         removeRoomsButton.addActionListener(this);
@@ -39,7 +39,7 @@ public class HotelController extends JFrame implements ActionListener {
         removeHotelButton.addActionListener(this);
         editDatePriceModifiersButton.addActionListener(this);
 
-        //Creates a frame
+        //frame
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(8, 2));
         panel.add(new JLabel("New Hotel Name:"));
@@ -60,11 +60,10 @@ public class HotelController extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
     }
-
     /**
-     * Allows for c
-     *
-     * @param choice the event to be processed.
+     * Determines which function call based on the button clicked.
+     * 
+     * @param choice the action event that triggered this method
      */
     @Override
     public void actionPerformed(ActionEvent choice) {
@@ -86,9 +85,8 @@ public class HotelController extends JFrame implements ActionListener {
             editDatePriceModifiers();
         }
     }
-
     /**
-     * Used to change the name of the hotel.
+     * The GUI message dialogue menu for changeHotelName method of hotel class.
      */
     private void changeHotelName() {
         String newHotelName = newHotelNameField.getText();
@@ -113,9 +111,8 @@ public class HotelController extends JFrame implements ActionListener {
             }
         }
     }
-
     /**
-     * Adds to the total number of rooms.
+     * The GUI message dialogue menu for addRooms method of hotel class.
      */
     private void addRooms() {
         String addRoomsStr = JOptionPane.showInputDialog(this, "Enter number of rooms to add:");
@@ -125,9 +122,8 @@ public class HotelController extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Added " + addRoomsStr + " Room/s.");
         }
     }
-
     /**
-     * Removes from the total number of rooms.
+     * The GUI message dialogue menu for removeRooms method of hotel class.
      */
     private void removeRooms() {
         //int totalRooms = hotel.getNumOfRooms();
@@ -141,9 +137,8 @@ public class HotelController extends JFrame implements ActionListener {
             }
         }
     }
-
     /**
-     * Allows to modify the amount of types of rooms in the hotel.
+     * The GUI message dialogue menu for modifyRooms method of hotel class.
      */
     private void modifyRooms() {
         int totalRooms = hotel.getNumOfRooms();
@@ -160,9 +155,8 @@ public class HotelController extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "The total number of rooms must equal " + totalRooms + ". Please try again.");
         }
     }
-
     /**
-     * Updates the base price per night of the rooms in the hotel.
+     * The GUI message dialogue menu for updateBasePrice method of hotel class.
      */
     private void updateBasePrice() {
         double price = hotel.getBasePrice();
@@ -178,9 +172,8 @@ public class HotelController extends JFrame implements ActionListener {
             }
         }
     }
-
     /**
-     * Using a reservation ID, removes that reservation from the room.
+     * The GUI message dialogue menu for removeReservation method of hotel class.
      */
     private void removeReservation() {
         String removeId = JOptionPane.showInputDialog(this, "Enter reservation ID to remove:");
@@ -191,9 +184,8 @@ public class HotelController extends JFrame implements ActionListener {
             }
         }
     }
-
     /**
-     * Removes a hotel from the list.
+     * The GUI message dialogue menu for removeHotel method of hotel class.
      */
     private void removeHotel() {
         int confirmRemoveHotel = JOptionPane.showConfirmDialog(this, "Are you sure you will delete hotel " + hotel.getName() + "\nPress OK to confirm, Cancel to cancel");
@@ -203,9 +195,8 @@ public class HotelController extends JFrame implements ActionListener {
             dispose();
         }
     }
-
     /**
-     * Allows for editing of price on certain dates.
+     * The GUI message dialogue menu for editDatePriceModifiers method of hotel class.
      */
     private void editDatePriceModifiers() {
         String[] options = {"Single date", "Multiple dates", "Return to menu"};

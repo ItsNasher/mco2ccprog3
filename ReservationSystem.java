@@ -4,6 +4,11 @@ import java.util.Scanner;
 public class ReservationSystem {
     private ArrayList<Hotel> hotels = new ArrayList<>();
 
+    /**
+     * Creates a new hotel with a unique name.
+     * 
+     * @return true if the hotel was successfully created, false otherwise
+     */
     public boolean createHotel(){
         Scanner sc = new Scanner(System.in);
 
@@ -27,7 +32,9 @@ public class ReservationSystem {
 
         return true;
     }
-
+    /**
+     * Displays information about a selected hotel depending on user input
+     */
     public void viewHotel(){
         Scanner sc = new Scanner (System.in);
 
@@ -103,7 +110,9 @@ public class ReservationSystem {
             }
         }
     }
-    
+    /**
+     * Sets various parameters and settings across a specified hotel based on the user input
+     */
     public void manageHotel(){
         Scanner sc = new Scanner(System.in);
 
@@ -356,6 +365,9 @@ public class ReservationSystem {
             }
         }
     }
+    /**
+     * Simulates a booking based on the user inputs
+     */
     public void simulateBooking(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the guest name for reservation: ");

@@ -1,7 +1,8 @@
 
 import java.util.ArrayList;
 /**
- * Room class containing the initial information about the rooms in the hotel.
+ * The room class represents a room with a room number, type, and price
+ * This class holds an array list of reservations of its own
  */
 public class Room {
     int roomNumber;
@@ -10,9 +11,11 @@ public class Room {
     private ArrayList<Reservation> reservationList;
 
     /**
-     * @param type Type of room. 0 for standard, 1 for deluxe and 2 for executive.
-     * @param roomNumber Room number designated to the room.
-     * @param basePrice Base price per night of the room.
+     * Constructs a Room object with the specified type, room number, and base price.
+     *
+     * @param type       the type of the room (0 for standard, 1 for deluxe, 2 for executive)
+     * @param roomNumber the room number
+     * @param basePrice  the base price of the room
      */
     public Room (int type, int roomNumber, double basePrice){
         this.type = type;
@@ -21,7 +24,9 @@ public class Room {
         setActualPrice(basePrice);
     }
     /**
-     * @param basePrice Based on the type of the room, sets the price.
+     * Sets the actual price of the room based on its type.
+     *
+     * @param basePrice the base price of the room
      */
     public void setActualPrice(double basePrice){
         switch (this.type) {
@@ -37,20 +42,26 @@ public class Room {
         }
     }
     /**
-     * @param res Adds a reservation to the reservation list.
+     * Adds a reservation to the room.
+     *
+     * @param res the reservation to add
      */
     public void addReservation(Reservation res){
         this.reservationList.add(res);
     }
     /**
-     * @param res Removes a reservation from the reservation list.
+     * Removes a reservation from the room.
+     *
+     * @param res the reservation to remove
      */
     public void removeReservation(Reservation res){
         this.reservationList.remove(res);
     }
     /**
-     * @param day The day to be checked if the room is available.
-     * @return True if its available, and false otherwise.
+     * Checks if the room is available on a specific day.
+     *
+     * @param day the day to check
+     * @return true if the room is available, otherwise false
      */
     public boolean isAvailable(int day){
         for (Reservation reservation : reservationList) {
@@ -61,9 +72,10 @@ public class Room {
         return true;
     }
     /**
-     * @return The basic info of the room.
+     * Prints the basic information of the room.
+     *
+     * @return an ArrayList containing the basic information of the room
      */
-    // made this return arraylist
     public ArrayList<String> printBasicInfo(){
         ArrayList<String> strReservations = new ArrayList<>();
 
@@ -87,8 +99,10 @@ public class Room {
         return strReservations;
     }
     /**
-     * @param resNo Reservation ID to be checked.
-     * @return True if reservation is there, false otherwise.
+     * Prints the information of a specific reservation.
+     *
+     * @param resNo the reservation number
+     * @return true if the reservation is found and printed, otherwise false
      */
     public boolean printReservationInfo(String resNo){
         for (Reservation res : reservationList){
@@ -100,8 +114,10 @@ public class Room {
         return false;
     }
     /**
-     * @param resId Reservation ID given to the guest.
-     * @return True if the reservation was removed, false if otherwise.
+     * Removes a reservation with the specified ID from the room.
+     *
+     * @param resId the reservation ID
+     * @return true if the reservation is successfully removed, otherwise false
      */
     public boolean removeReservationById(String resId){
         for (Reservation res : reservationList){
@@ -114,8 +130,10 @@ public class Room {
         return false;
     }
     /**
-     * @param res The reservation selected.
-     * @return Returns that reservation if its part of the list, otherwise not.
+     * Gets a reservation from the room.
+     *
+     * @param res the reservation to get
+     * @return the reservation if found, otherwise null
      */
     public Reservation getReservation(Reservation res){
         for (Reservation reservation : reservationList){
@@ -126,7 +144,9 @@ public class Room {
         return null;
     }
     /**
-     * @return Returns true if there is a reservation for the room, otherwise false.
+     * Checks if the room has any reservations.
+     *
+     * @return true if the room has reservations, otherwise false
      */
     public boolean hasReservation(){
         if (this.reservationList.size() > 0) {
@@ -135,25 +155,33 @@ public class Room {
         return false;
     }
     /**
-     * @return The room number.
+     * Gets the room number.
+     *
+     * @return the room number
      */
     public int getRoomNumber(){
         return this.roomNumber;
     }
     /**
-     * @return The type of the room.
+     * Gets the type of the room.
+     *
+     * @return the type of the room (0 for standard, 1 for deluxe, 2 for executive)
      */
     public int getRoomType(){
         return this.type;
     }
     /**
-     * @return The base price of the room.
+     * Gets the actual price of the room.
+     *
+     * @return the actual price of the room
      */
     public double getActualPrice(){
         return this.actualPrice;
     }
     /**
-     * @param type The new type of the room.
+     * Sets the type of the room.
+     *
+     * @param type the new type of the room (0 for standard, 1 for deluxe, 2 for executive)
      */
     public void setRoomType(int type){
         this.type = type;

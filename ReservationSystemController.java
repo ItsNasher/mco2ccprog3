@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import java.util.ArrayList;
 import java.util.Scanner;
 /**
- * Used for Handling the GUI version of the reservation System.
+ * This class represents the GUI elements of the ReservationSystem class.
  */
 public class ReservationSystemController extends JFrame implements ActionListener {
     JButton createhotel;
@@ -17,12 +17,8 @@ public class ReservationSystemController extends JFrame implements ActionListene
 
     private ArrayList<Hotel> hotels = new ArrayList<>();
 
-    /**
-     * Initial menu/frame of the program.
-     */
     ReservationSystemController() {
-        //separate buttons for each function of the hotel.
-        //each button has their bounds, action listeners and all setFocusable(false)
+        //separate buttons for each
         createhotel = new JButton();
         createhotel.setBounds(175, 70, 150, 45);
         createhotel.addActionListener(this);
@@ -57,12 +53,13 @@ public class ReservationSystemController extends JFrame implements ActionListene
         this.add(managehotel);
         this.add(simulatebooking);
     }
-
     /**
-     * @param choice the event to be processed
+     * Determines which function call based on the button clicked.
+     * 
+     * @param choice the action event that triggered this method
      */
     @Override
-    public void actionPerformed(ActionEvent choice) { //scanning the input, based on the buttons pressed in the menu
+    public void actionPerformed(ActionEvent choice) { //scanning the input
             if (choice.getSource() == createhotel) {
                 String newName = JOptionPane.showInputDialog("Input name of new hotel:");
                 if (newName != null && !newName.trim().isEmpty()) {
@@ -80,8 +77,10 @@ public class ReservationSystemController extends JFrame implements ActionListene
                 simulateBooking();
     }
     /**
-     * @param hotelName The name of the hotel to get information from.
-     * @return Returns the hotel.
+     * Gets the hotel given a specified hotel name.
+     * 
+     * @param hotelName     the name of the hotel
+     * @return              returns the hotel object
      */
     private Hotel getHotel (String hotelName){
         for (Hotel hotel : hotels){
@@ -91,8 +90,10 @@ public class ReservationSystemController extends JFrame implements ActionListene
         return null;
     }
     /**
-     * @param newName The name of the newly created hotel.
-     * @return Returns a true or false statement after the hotel is created or not.
+     * Creates a hotel given a specified hotel name.
+     * 
+     * @param newName     the name of the hotel
+     * @return            true if hotel was sucessfully created, otherwise false
      */
     private boolean createHotel(String newName) {
         for (Hotel hotel : hotels) {
@@ -104,9 +105,8 @@ public class ReservationSystemController extends JFrame implements ActionListene
         hotels.add(hotel);
         return true; // Hotel successfully created
     }
-
     /**
-     * Allows for viewing of the hotels information.
+     * The GUI message dialogue menu for viewHotel method of the ReservationSystem class.
      */
     private void viewHotel() {
         String hotel = JOptionPane.showInputDialog("Enter the name of the hotel you would you like to view: ");
@@ -117,14 +117,14 @@ public class ReservationSystemController extends JFrame implements ActionListene
                 return;
             }
             boolean menu = true;
-            while (menu) { //Options of the different information for viewing
+            while (menu) {
                 String[] options = {"View Basic Info", "View Room Availability",
                         "View Room Info", "View Reservation Info", "Back to Main Menu"};
 
                 int choice = JOptionPane.showOptionDialog(this, "Choose an Option: ",
                         "Hotel Menu", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
                         options, options[0]);
-                //exit menu if user clicks x on the top right
+                //for x
                 if (choice == -1){
                     menu = false;
                     break;
@@ -186,9 +186,9 @@ public class ReservationSystemController extends JFrame implements ActionListene
         }
     }
     /**
-     * Used to edit the hotels components.
+     * The GUI message dialogue menu for manageHotel method of the ReservationSystem class.
      */
-    private void manageHotel(){
+    private void manageHotel(){ //to do (use the hotel controller)
         String hotel = JOptionPane.showInputDialog("Enter the name of the hotel: ");
         if (hotel != null && !hotel.trim().isEmpty()){
             Hotel selectedHotel = getHotel(hotel);
@@ -196,13 +196,12 @@ public class ReservationSystemController extends JFrame implements ActionListene
                 JOptionPane.showMessageDialog(this, "Hotel not found.");
             else
                 new HotelController(this, selectedHotel).setVisible(true);
-        } //creates instance of hotelcontroller to make it easier to edit the attributes of the hotel
+        }
     }
-    
     /**
-     * Used to simulate how a consumer would book into this hotel.
+     * The GUI message dialogue menu for simulateBooking method of the ReservationSystem class.
      */
-    public void simulateBooking(){ //Gather booking details from the guest
+    public void simulateBooking(){ 
         String guestName = JOptionPane.showInputDialog("Enter the guest name for reservation:");
         if (guestName == null || guestName.trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Guest name cannot be empty.");
@@ -220,7 +219,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
             JOptionPane.showMessageDialog(this, "Hotel not found.");
             return;
         }
-        //Guest selecting room type
+
         String[] roomTypes = {"Standard", "Deluxe", "Executive"};
         String roomType = (String) JOptionPane.showInputDialog(this, "Enter type of room to book:", "Room Type",
                 JOptionPane.QUESTION_MESSAGE, null, roomTypes, roomTypes[0]);
@@ -245,7 +244,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
 
         int checkIn = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-in date [1-30]:"));
         int checkOut = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-out date [2-31]:"));
-        //checking the conditions based on the check in/out dates provided
+
         if (checkIn == checkOut) {
             JOptionPane.showMessageDialog(this, "The check-in and check-out dates cannot be the same.");
             return;
@@ -258,14 +257,13 @@ public class ReservationSystemController extends JFrame implements ActionListene
             JOptionPane.showMessageDialog(this, "The check-out date must not occur before the check-in date.");
             return;
         }
-        //Input for the discount code
+
         String discountCode = JOptionPane.showInputDialog("Enter a discount code (if applicable). Type 0 if none:");
         if (discountCode == null || discountCode.trim().isEmpty() || discountCode.equals("0")) {
             discountCode = null;
         } else
             discountCode.replaceAll("[\\r\\n]", "");
-
-        //Creates a reservation
+        
         String resId;
         if (discountCode == null) {
             resId = selectedHotel.createReservation(type, guestName, checkIn, checkOut);
@@ -275,13 +273,12 @@ public class ReservationSystemController extends JFrame implements ActionListene
             JOptionPane.showMessageDialog(this, "Discount code sucessfully applied");
         }
             
-        //Checks if the reservation was successful
+
         if (resId == null) {
             JOptionPane.showMessageDialog(this, "Failed to create reservation.");
             return;
         }
 
-        //Displaying information about the created reservation.
         selectedHotel.printReservationInfo(resId);
         selectedHotel.printDatePriceInfo(resId, checkIn, checkOut);
         int confirmBooking = JOptionPane.showConfirmDialog(this, "Press OK to confirm, Cancel to cancel.");
@@ -293,7 +290,9 @@ public class ReservationSystemController extends JFrame implements ActionListene
             JOptionPane.showMessageDialog(this, "Successfully created reservation ID " + resId);
     }
     /**
-     * @return Returns the list of hotels.
+     * Gets an array list of all the hotels in the reservation system controller
+     * 
+     * @return  array list of hotel objects
      */
     public ArrayList<Hotel> getHotels(){
         return hotels;
