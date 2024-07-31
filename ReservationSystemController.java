@@ -22,6 +22,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
      */
     ReservationSystemController() {
         //separate buttons for each function of the hotel.
+        //each button has their bounds, action listeners and all setFocusable(false)
         createhotel = new JButton();
         createhotel.setBounds(175, 70, 150, 45);
         createhotel.addActionListener(this);
@@ -116,14 +117,14 @@ public class ReservationSystemController extends JFrame implements ActionListene
                 return;
             }
             boolean menu = true;
-            while (menu) {
+            while (menu) { //Options of the different information for viewing
                 String[] options = {"View Basic Info", "View Room Availability",
                         "View Room Info", "View Reservation Info", "Back to Main Menu"};
 
                 int choice = JOptionPane.showOptionDialog(this, "Choose an Option: ",
                         "Hotel Menu", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
                         options, options[0]);
-                //for x
+                //exit menu if user clicks x on the top right
                 if (choice == -1){
                     menu = false;
                     break;
@@ -201,7 +202,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
     /**
      * Used to simulate how a consumer would book into this hotel.
      */
-    public void simulateBooking(){ 
+    public void simulateBooking(){ //Gather booking details from the guest
         String guestName = JOptionPane.showInputDialog("Enter the guest name for reservation:");
         if (guestName == null || guestName.trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Guest name cannot be empty.");
@@ -219,7 +220,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
             JOptionPane.showMessageDialog(this, "Hotel not found.");
             return;
         }
-
+        //Guest selecting room type
         String[] roomTypes = {"Standard", "Deluxe", "Executive"};
         String roomType = (String) JOptionPane.showInputDialog(this, "Enter type of room to book:", "Room Type",
                 JOptionPane.QUESTION_MESSAGE, null, roomTypes, roomTypes[0]);
@@ -257,13 +258,14 @@ public class ReservationSystemController extends JFrame implements ActionListene
             JOptionPane.showMessageDialog(this, "The check-out date must not occur before the check-in date.");
             return;
         }
-        
+        //Input for the discount code
         String discountCode = JOptionPane.showInputDialog("Enter a discount code (if applicable). Type 0 if none:");
         if (discountCode == null || discountCode.trim().isEmpty() || discountCode.equals("0")) {
             discountCode = null;
         } else
             discountCode.replaceAll("[\\r\\n]", "");
-        
+
+        //Creates a reservation
         String resId;
         if (discountCode == null) {
             resId = selectedHotel.createReservation(type, guestName, checkIn, checkOut);
@@ -273,12 +275,13 @@ public class ReservationSystemController extends JFrame implements ActionListene
             JOptionPane.showMessageDialog(this, "Discount code sucessfully applied");
         }
             
-
+        //Checks if the reservation was successful
         if (resId == null) {
             JOptionPane.showMessageDialog(this, "Failed to create reservation.");
             return;
         }
 
+        //Displaying information about the created reservation.
         selectedHotel.printReservationInfo(resId);
         selectedHotel.printDatePriceInfo(resId, checkIn, checkOut);
         int confirmBooking = JOptionPane.showConfirmDialog(this, "Press OK to confirm, Cancel to cancel.");
