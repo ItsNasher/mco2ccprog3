@@ -21,7 +21,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
      * Initial menu/frame of the program.
      */
     ReservationSystemController() {
-        //separate buttons for each
+        //separate buttons for each function of the hotel.
         createhotel = new JButton();
         createhotel.setBounds(175, 70, 150, 45);
         createhotel.addActionListener(this);
@@ -61,7 +61,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
      * @param choice the event to be processed
      */
     @Override
-    public void actionPerformed(ActionEvent choice) { //scanning the input
+    public void actionPerformed(ActionEvent choice) { //scanning the input, based on the buttons pressed in the menu
             if (choice.getSource() == createhotel) {
                 String newName = JOptionPane.showInputDialog("Input name of new hotel:");
                 if (newName != null && !newName.trim().isEmpty()) {
@@ -187,7 +187,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
     /**
      * Used to edit the hotels components.
      */
-    private void manageHotel(){ //to do (use the hotel controller)
+    private void manageHotel(){
         String hotel = JOptionPane.showInputDialog("Enter the name of the hotel: ");
         if (hotel != null && !hotel.trim().isEmpty()){
             Hotel selectedHotel = getHotel(hotel);
@@ -195,7 +195,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
                 JOptionPane.showMessageDialog(this, "Hotel not found.");
             else
                 new HotelController(this, selectedHotel).setVisible(true);
-        }
+        } //creates instance of hotelcontroller to make it easier to edit the attributes of the hotel
     }
     
     /**
@@ -244,7 +244,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
 
         int checkIn = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-in date [1-30]:"));
         int checkOut = Integer.parseInt(JOptionPane.showInputDialog("Enter a check-out date [2-31]:"));
-
+        //checking the conditions based on the check in/out dates provided
         if (checkIn == checkOut) {
             JOptionPane.showMessageDialog(this, "The check-in and check-out dates cannot be the same.");
             return;
@@ -257,7 +257,7 @@ public class ReservationSystemController extends JFrame implements ActionListene
             JOptionPane.showMessageDialog(this, "The check-out date must not occur before the check-in date.");
             return;
         }
-
+        
         String discountCode = JOptionPane.showInputDialog("Enter a discount code (if applicable). Type 0 if none:");
         if (discountCode == null || discountCode.trim().isEmpty() || discountCode.equals("0")) {
             discountCode = null;
