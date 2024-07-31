@@ -6,8 +6,8 @@ import java.awt.event.*;
  * but moreso making it easier to change information about the hotel.
  */
 public class HotelController extends JFrame implements ActionListener {
-    private Hotel hotel;
-    private ReservationSystemController controller;
+    private Hotel hotel; //instance of the hotel that is being managed
+    private ReservationSystemController controller; //Allows for accessing methods from ReservationSystemController
     private JTextField newHotelNameField;
     private JButton changeNameButton, addRoomsButton, removeRoomsButton, modifyRoomsButton, updateBasePriceButton, removeReservationButton, removeHotelButton, editDatePriceModifiersButton;
     /**
@@ -18,7 +18,7 @@ public class HotelController extends JFrame implements ActionListener {
         this.controller = controller;
         this.hotel = hotel;
 
-        // initializing
+        // initializing the GUI for managing the hotel.
         newHotelNameField = new JTextField(20);
         changeNameButton = new JButton("Change Name");
         addRoomsButton = new JButton("Add Rooms");
@@ -29,6 +29,7 @@ public class HotelController extends JFrame implements ActionListener {
         removeHotelButton = new JButton("Remove Hotel");
         editDatePriceModifiersButton = new JButton("Edit Date Price Modifiers");
 
+        //Action listeners to the buttons.
         changeNameButton.addActionListener(this);
         addRoomsButton.addActionListener(this);
         removeRoomsButton.addActionListener(this);
@@ -38,7 +39,7 @@ public class HotelController extends JFrame implements ActionListener {
         removeHotelButton.addActionListener(this);
         editDatePriceModifiersButton.addActionListener(this);
 
-        //frame
+        //Creates a frame
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(8, 2));
         panel.add(new JLabel("New Hotel Name:"));
@@ -61,6 +62,8 @@ public class HotelController extends JFrame implements ActionListener {
     }
 
     /**
+     * Allows for c
+     *
      * @param choice the event to be processed.
      */
     @Override
